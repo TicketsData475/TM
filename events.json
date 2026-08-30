@@ -1,0 +1,1503 @@
+{
+    "total": 460,
+    "totalLocal": 0,
+    "totalInternational": 0,
+    "events": [
+        {
+            "title": "Las Vegas Raiders vs. Denver Broncos",
+            "id": "1700646CC3B3C3BF",
+            "discoveryId": "1AvjZ_kGkSdiHCT",
+            "dates": {
+                "dateDisplay": "showDateTime",
+                "startDate": "2026-12-20T21:25:00Z",
+                "onsaleDate": "2026-05-14T23:30:00Z",
+                "spanMultipleDays": false
+            },
+            "url": "https://www.ticketmaster.com/las-vegas-raiders-vs-denver-broncos-las-vegas-nevada-12-20-2026/event/1700646CC3B3C3BF",
+            "upsellLandingPageUrl": "https://www.ticketmaster.com/extras/las-vegas-raiders-vs-denver-broncos-las-vegas-nevada-12-20-2026/1700646CC3B3C3BF",
+            "seatmapUrl": "https://mapsapi.tmol.io/maps/geometry/3/event/1700646CC3B3C3BF/staticImage?type=png&systemId=HOST",
+            "partnerEvent": false,
+            "isPartner": false,
+            "showTmButton": true,
+            "venue": {
+                "city": "Las Vegas",
+                "name": "Allegiant Stadium",
+                "country": "US",
+                "countryCode": "US",
+                "countryName": "United States",
+                "state": "NV",
+                "url": "https://www.ticketmaster.com/allegiant-stadium-tickets-las-vegas/venue/189482",
+                "imageUrl": "https://s1.ticketm.net/dbimages/23729v.jpg",
+                "latitude": 36.09090000,
+                "longitude": -115.18330000,
+                "addressLineOne": "3333 Al Davis Way",
+                "code": "89118"
+            },
+            "timeZone": "America/Los_Angeles",
+            "cancelled": false,
+            "postponed": false,
+            "rescheduled": false,
+            "tba": false,
+            "local": true,
+            "sameRegion": false,
+            "soldOut": false,
+            "limitedAvailability": false,
+            "ticketingStatus": "UNKNOWN",
+            "eventChangeStatus": "none",
+            "virtual": false,
+            "addOns": [
+                {
+                    "type": "Parking",
+                    "options": [
+                        {
+                            "name": "Raiders vs Broncos Parking",
+                            "url": "https://www.ticketmaster.com/raiders-vs-broncos-parking-las-vegas-nevada-12-20-2026/event/1700646CC67CC9CA"
+                        }
+                    ]
+                },
+                {
+                    "type": "Special Entry",
+                    "options": [
+                        {
+                            "name": "Las Vegas Raiders vs Dolphins - MASQUERAID",
+                            "url": "https://www.ticketmaster.com/las-vegas-raiders-vs-dolphins-masqueraid-las-vegas-nevada-09-13-2026/event/170064A8BD491606"
+                        }
+                    ]
+                }
+            ],
+            "artists": [
+                {
+                    "name": "Las Vegas Raiders",
+                    "url": "https://www.ticketmaster.com/las-vegas-raiders-tickets/artist/805994",
+                    "imageUrls": {
+                        "ARTIST_PAGE_3_2": "https://s1.ticketm.net/dam/a/608/ad100b89-b729-4822-8165-5b626c21a608_1325251_ARTIST_PAGE_3_2.jpg",
+                        "RETINA_PORTRAIT_16_9": "https://s1.ticketm.net/dam/a/608/ad100b89-b729-4822-8165-5b626c21a608_1325251_RETINA_PORTRAIT_16_9.jpg"
+                    }
+                },
+                {
+                    "name": "Denver Broncos",
+                    "url": "https://www.ticketmaster.com/denver-broncos-tickets/artist/805934",
+                    "imageUrls": {
+                        "ARTIST_PAGE_3_2": "https://s1.ticketm.net/dam/a/ba2/62335f87-41c3-41a5-a44b-7f017e2bbba2_ARTIST_PAGE_3_2.jpg",
+                        "RETINA_PORTRAIT_16_9": "https://s1.ticketm.net/dam/a/ba2/62335f87-41c3-41a5-a44b-7f017e2bbba2_RETINA_PORTRAIT_16_9.jpg"
+                    }
+                }
+            ],
+            "majorCategory": {
+                "id": "KZFzniwnSyZfZ7v7nE",
+                "canonicalUrls": {},
+                "major": true
+            }
+        },
+        {
+            "title": "Preseason Game 1: Carolina Panthers v Houston Texans",
+            "id": "2D00646BB8CEED99",
+            "discoveryId": "G5eVZ_kmzSmU_",
+            "dates": {
+                "dateDisplay": "showDateTime",
+                "startDate": "2026-08-28T23:00:00Z",
+                "onsaleDate": "2026-05-15T01:00:00Z",
+                "spanMultipleDays": false
+            },
+            "presaleDates": [
+                {
+                    "name": "PSL Owners and Partners Pre-Sale",
+                    "startDateTime": "2026-05-15T00:00:00Z",
+                    "endDateTime": "2026-05-15T01:00:00Z"
+                },
+                {
+                    "name": "TSE/Stadium Presale",
+                    "startDateTime": "2026-05-15T00:30:00Z",
+                    "endDateTime": "2026-05-15T01:00:00Z"
+                },
+                {
+                    "name": "Resale",
+                    "startDateTime": "2026-05-14T23:30:00Z",
+                    "endDateTime": "2026-08-24T00:00:00Z"
+                }
+            ],
+            "url": "https://www.ticketmaster.com/preseason-game-1-carolina-panthers-v-charlotte-north-carolina-08-28-2026/event/2D00646BB8CEED99",
+            "seatmapUrl": "https://mapsapi.tmol.io/maps/geometry/3/event/2D00646BB8CEED99/staticImage?type=png&systemId=HOST",
+            "partnerEvent": false,
+            "isPartner": false,
+            "showTmButton": true,
+            "venue": {
+                "city": "Charlotte",
+                "name": "Bank of America Stadium",
+                "country": "US",
+                "countryCode": "US",
+                "countryName": "United States",
+                "state": "NC",
+                "url": "https://www.ticketmaster.com/bank-of-america-stadium-tickets-charlotte/venue/368876",
+                "imageUrl": "https://s1.ticketm.net/dbimages/22383v.jpg",
+                "latitude": 35.225789,
+                "longitude": -80.852829,
+                "addressLineOne": "800 South Mint Street",
+                "code": "28202"
+            },
+            "timeZone": "America/New_York",
+            "cancelled": false,
+            "postponed": false,
+            "rescheduled": false,
+            "tba": false,
+            "local": true,
+            "sameRegion": false,
+            "soldOut": false,
+            "limitedAvailability": false,
+            "ticketingStatus": "UNKNOWN",
+            "eventChangeStatus": "none",
+            "virtual": false,
+            "artists": [
+                {
+                    "name": "Carolina Panthers",
+                    "url": "https://www.ticketmaster.com/carolina-panthers-tickets/artist/805909",
+                    "imageUrls": {
+                        "ARTIST_PAGE_3_2": "https://s1.ticketm.net/dam/a/340/8f54cfaa-27bc-4e1d-a7ea-dd5e71782340_1325021_ARTIST_PAGE_3_2.jpg",
+                        "RETINA_PORTRAIT_16_9": "https://s1.ticketm.net/dam/a/340/8f54cfaa-27bc-4e1d-a7ea-dd5e71782340_1325021_RETINA_PORTRAIT_16_9.jpg"
+                    }
+                },
+                {
+                    "name": "Houston Texans",
+                    "url": "https://www.ticketmaster.com/houston-texans-tickets/artist/821630",
+                    "imageUrls": {
+                        "ARTIST_PAGE_3_2": "https://s1.ticketm.net/dam/a/ef8/1374da28-456b-4590-86f2-b6c7ba8dbef8_ARTIST_PAGE_3_2.jpg",
+                        "RETINA_PORTRAIT_16_9": "https://s1.ticketm.net/dam/a/ef8/1374da28-456b-4590-86f2-b6c7ba8dbef8_RETINA_PORTRAIT_16_9.jpg"
+                    }
+                }
+            ],
+            "majorCategory": {
+                "id": "KZFzniwnSyZfZ7v7nE",
+                "canonicalUrls": {},
+                "major": true
+            }
+        },
+        {
+            "title": "Cincinnati Bengals vs. Tampa Bay Buccaneers",
+            "id": "16006469BBDC93F4",
+            "discoveryId": "1ApZkotGkeDMa2V",
+            "dates": {
+                "dateDisplay": "showDateTime",
+                "startDate": "2026-09-13T17:00:00Z",
+                "onsaleDate": "2026-05-14T23:30:00Z",
+                "spanMultipleDays": false
+            },
+            "presaleDates": [
+                {
+                    "name": "Exclusive Ticket Offer",
+                    "startDateTime": "2026-05-14T23:30:00Z",
+                    "endDateTime": "2026-05-15T14:00:00Z"
+                },
+                {
+                    "name": "July 4th Offer",
+                    "startDateTime": "2026-07-03T04:00:00Z",
+                    "endDateTime": "2026-07-05T03:59:00Z"
+                }
+            ],
+            "url": "https://www.ticketmaster.com/cincinnati-bengals-vs-tampa-bay-buccaneers-cincinnati-ohio-09-13-2026/event/16006469BBDC93F4",
+            "seatmapUrl": "https://mapsapi.tmol.io/maps/geometry/3/event/16006469BBDC93F4/staticImage?type=png&systemId=HOST",
+            "partnerEvent": false,
+            "isPartner": false,
+            "showTmButton": true,
+            "venue": {
+                "city": "Cincinnati",
+                "name": "Paycor Stadium",
+                "country": "US",
+                "countryCode": "US",
+                "countryName": "United States",
+                "state": "OH",
+                "url": "https://www.ticketmaster.com/paycor-stadium-tickets-cincinnati/venue/180259",
+                "imageUrl": "https://s1.ticketm.net/dbimages/22772v.jpg",
+                "latitude": 39.09555560,
+                "longitude": -84.51611110,
+                "addressLineOne": "One Paycor Stadium",
+                "code": "45202"
+            },
+            "timeZone": "America/New_York",
+            "cancelled": false,
+            "postponed": false,
+            "rescheduled": false,
+            "tba": false,
+            "local": true,
+            "sameRegion": false,
+            "soldOut": false,
+            "limitedAvailability": false,
+            "ticketingStatus": "UNKNOWN",
+            "eventChangeStatus": "none",
+            "virtual": false,
+            "artists": [
+                {
+                    "name": "Cincinnati Bengals",
+                    "url": "https://www.ticketmaster.com/cincinnati-bengals-tickets/artist/805918",
+                    "imageUrls": {
+                        "ARTIST_PAGE_3_2": "https://s1.ticketm.net/dam/a/dcc/3a889254-eccf-4f23-a303-8b189abc2dcc_1393131_ARTIST_PAGE_3_2.jpg",
+                        "RETINA_PORTRAIT_16_9": "https://s1.ticketm.net/dam/a/dcc/3a889254-eccf-4f23-a303-8b189abc2dcc_1393131_RETINA_PORTRAIT_16_9.jpg"
+                    }
+                },
+                {
+                    "name": "Tampa Bay Buccaneers",
+                    "url": "https://www.ticketmaster.com/tampa-bay-buccaneers-tickets/artist/806026",
+                    "imageUrls": {
+                        "ARTIST_PAGE_3_2": "https://s1.ticketm.net/dam/a/a1c/6b5bfe16-4a07-4d42-a817-b94243f9aa1c_1325381_ARTIST_PAGE_3_2.jpg",
+                        "RETINA_PORTRAIT_16_9": "https://s1.ticketm.net/dam/a/a1c/6b5bfe16-4a07-4d42-a817-b94243f9aa1c_1325381_RETINA_PORTRAIT_16_9.jpg"
+                    }
+                }
+            ],
+            "majorCategory": {
+                "id": "KZFzniwnSyZfZ7v7nE",
+                "canonicalUrls": {},
+                "major": true
+            }
+        },
+        {
+            "title": "Las Vegas Raiders vs. Los Angeles Chargers",
+            "id": "1700646CC3D4C40E",
+            "discoveryId": "1AvjZ_kGkSdgG8C",
+            "dates": {
+                "dateDisplay": "showDateTime",
+                "startDate": "2026-12-13T21:05:00Z",
+                "onsaleDate": "2026-05-14T23:30:00Z",
+                "spanMultipleDays": false
+            },
+            "url": "https://www.ticketmaster.com/las-vegas-raiders-vs-los-angeles-las-vegas-nevada-12-13-2026/event/1700646CC3D4C40E",
+            "upsellLandingPageUrl": "https://www.ticketmaster.com/extras/las-vegas-raiders-vs-los-angeles-las-vegas-nevada-12-13-2026/1700646CC3D4C40E",
+            "seatmapUrl": "https://mapsapi.tmol.io/maps/geometry/3/event/1700646CC3D4C40E/staticImage?type=png&systemId=HOST",
+            "partnerEvent": false,
+            "isPartner": false,
+            "showTmButton": true,
+            "venue": {
+                "city": "Las Vegas",
+                "name": "Allegiant Stadium",
+                "country": "US",
+                "countryCode": "US",
+                "countryName": "United States",
+                "state": "NV",
+                "url": "https://www.ticketmaster.com/allegiant-stadium-tickets-las-vegas/venue/189482",
+                "imageUrl": "https://s1.ticketm.net/dbimages/23729v.jpg",
+                "latitude": 36.09090000,
+                "longitude": -115.18330000,
+                "addressLineOne": "3333 Al Davis Way",
+                "code": "89118"
+            },
+            "timeZone": "America/Los_Angeles",
+            "cancelled": false,
+            "postponed": false,
+            "rescheduled": false,
+            "tba": false,
+            "local": true,
+            "sameRegion": false,
+            "soldOut": false,
+            "limitedAvailability": false,
+            "ticketingStatus": "UNKNOWN",
+            "eventChangeStatus": "none",
+            "virtual": false,
+            "addOns": [
+                {
+                    "type": "Special Entry",
+                    "options": [
+                        {
+                            "name": "Las Vegas Raiders vs Dolphins - MASQUERAID",
+                            "url": "https://www.ticketmaster.com/las-vegas-raiders-vs-dolphins-masqueraid-las-vegas-nevada-09-13-2026/event/170064A8BD491606"
+                        }
+                    ]
+                }
+            ],
+            "artists": [
+                {
+                    "name": "Las Vegas Raiders",
+                    "url": "https://www.ticketmaster.com/las-vegas-raiders-tickets/artist/805994",
+                    "imageUrls": {
+                        "ARTIST_PAGE_3_2": "https://s1.ticketm.net/dam/a/608/ad100b89-b729-4822-8165-5b626c21a608_1325251_ARTIST_PAGE_3_2.jpg",
+                        "RETINA_PORTRAIT_16_9": "https://s1.ticketm.net/dam/a/608/ad100b89-b729-4822-8165-5b626c21a608_1325251_RETINA_PORTRAIT_16_9.jpg"
+                    }
+                },
+                {
+                    "name": "Los Angeles Chargers",
+                    "url": "https://www.ticketmaster.com/los-angeles-chargers-tickets/artist/806013",
+                    "imageUrls": {
+                        "ARTIST_PAGE_3_2": "https://s1.ticketm.net/dam/a/1b3/74185b13-c819-4c0a-aa1f-553bd8fe91b3_ARTIST_PAGE_3_2.jpg",
+                        "RETINA_PORTRAIT_16_9": "https://s1.ticketm.net/dam/a/1b3/74185b13-c819-4c0a-aa1f-553bd8fe91b3_RETINA_PORTRAIT_16_9.jpg"
+                    }
+                }
+            ],
+            "majorCategory": {
+                "id": "KZFzniwnSyZfZ7v7nE",
+                "canonicalUrls": {},
+                "major": true
+            }
+        },
+        {
+            "title": "New York Giants vs. Dallas Cowboys",
+            "id": "00006491C2C4E00E",
+            "discoveryId": "k7vGF_a6esCZC",
+            "dates": {
+                "dateDisplay": "showDateTime",
+                "startDate": "2026-09-14T00:20:00Z",
+                "onsaleDate": "2026-05-11T23:00:00Z",
+                "spanMultipleDays": false
+            },
+            "presaleDates": [
+                {
+                    "name": "Amex Reserved Tickets®",
+                    "startDateTime": "2026-05-14T23:30:00Z",
+                    "endDateTime": "2026-05-15T23:30:00Z"
+                }
+            ],
+            "url": "https://www.ticketmaster.com/new-york-giants-vs-dallas-cowboys-east-rutherford-new-jersey-09-13-2026/event/00006491C2C4E00E",
+            "seatmapUrl": "https://mapsapi.tmol.io/maps/geometry/3/event/00006491C2C4E00E/staticImage?type=png&systemId=HOST",
+            "partnerEvent": false,
+            "isPartner": false,
+            "showTmButton": true,
+            "venue": {
+                "city": "East Rutherford",
+                "name": "MetLife Stadium",
+                "country": "US",
+                "countryCode": "US",
+                "countryName": "United States",
+                "state": "NJ",
+                "url": "https://www.ticketmaster.com/metlife-stadium-tickets-east-rutherford/venue/1233",
+                "imageUrl": "https://s1.ticketm.net/dbimages/22874v.jpg",
+                "latitude": 40.81359,
+                "longitude": -74.074493,
+                "addressLineOne": "One MetLife Stadium Drive",
+                "code": "07073"
+            },
+            "timeZone": "America/New_York",
+            "cancelled": false,
+            "postponed": false,
+            "rescheduled": false,
+            "tba": false,
+            "local": true,
+            "sameRegion": false,
+            "soldOut": false,
+            "limitedAvailability": false,
+            "ticketingStatus": "UNKNOWN",
+            "eventChangeStatus": "none",
+            "virtual": false,
+            "addOns": [
+                {
+                    "type": "Parking",
+                    "options": [
+                        {
+                            "name": "Parking Only - Giants v. Cowboys",
+                            "url": "https://www.ticketmaster.com/parking-only-giants-v-cowboys-east-rutherford-new-jersey-09-13-2026/event/00006495938B6CAF"
+                        }
+                    ]
+                }
+            ],
+            "artists": [
+                {
+                    "name": "New York Giants",
+                    "url": "https://www.ticketmaster.com/new-york-giants-tickets/artist/805985",
+                    "imageUrls": {
+                        "ARTIST_PAGE_3_2": "https://s1.ticketm.net/dam/a/d08/160b9eab-e52b-49eb-8413-6fecab653d08_1325501_ARTIST_PAGE_3_2.jpg",
+                        "RETINA_PORTRAIT_16_9": "https://s1.ticketm.net/dam/a/d08/160b9eab-e52b-49eb-8413-6fecab653d08_1325501_RETINA_PORTRAIT_16_9.jpg"
+                    }
+                },
+                {
+                    "name": "Dallas Cowboys",
+                    "url": "https://www.ticketmaster.com/dallas-cowboys-tickets/artist/805931",
+                    "imageUrls": {
+                        "ARTIST_PAGE_3_2": "https://s1.ticketm.net/dam/a/7e4/6f79c7fd-ac9a-4dba-97a6-1a6be82407e4_1325121_ARTIST_PAGE_3_2.jpg",
+                        "RETINA_PORTRAIT_16_9": "https://s1.ticketm.net/dam/a/7e4/6f79c7fd-ac9a-4dba-97a6-1a6be82407e4_1325121_RETINA_PORTRAIT_16_9.jpg"
+                    }
+                }
+            ],
+            "majorCategory": {
+                "id": "KZFzniwnSyZfZ7v7nE",
+                "canonicalUrls": {},
+                "major": true
+            }
+        },
+        {
+            "title": "Las Vegas Raiders vs. Tennessee Titans",
+            "id": "1700646CC3A0C3A4",
+            "discoveryId": "1AvjZ_kGkSdIGC0",
+            "dates": {
+                "dateDisplay": "showDateTime",
+                "startDate": "2026-12-27T21:05:00Z",
+                "onsaleDate": "2026-05-14T23:30:00Z",
+                "spanMultipleDays": false
+            },
+            "url": "https://www.ticketmaster.com/las-vegas-raiders-vs-tennessee-titans-las-vegas-nevada-12-27-2026/event/1700646CC3A0C3A4",
+            "upsellLandingPageUrl": "https://www.ticketmaster.com/extras/las-vegas-raiders-vs-tennessee-titans-las-vegas-nevada-12-27-2026/1700646CC3A0C3A4",
+            "seatmapUrl": "https://mapsapi.tmol.io/maps/geometry/3/event/1700646CC3A0C3A4/staticImage?type=png&systemId=HOST",
+            "partnerEvent": false,
+            "isPartner": false,
+            "showTmButton": true,
+            "venue": {
+                "city": "Las Vegas",
+                "name": "Allegiant Stadium",
+                "country": "US",
+                "countryCode": "US",
+                "countryName": "United States",
+                "state": "NV",
+                "url": "https://www.ticketmaster.com/allegiant-stadium-tickets-las-vegas/venue/189482",
+                "imageUrl": "https://s1.ticketm.net/dbimages/23729v.jpg",
+                "latitude": 36.09090000,
+                "longitude": -115.18330000,
+                "addressLineOne": "3333 Al Davis Way",
+                "code": "89118"
+            },
+            "timeZone": "America/Los_Angeles",
+            "cancelled": false,
+            "postponed": false,
+            "rescheduled": false,
+            "tba": false,
+            "local": true,
+            "sameRegion": false,
+            "soldOut": false,
+            "limitedAvailability": false,
+            "ticketingStatus": "UNKNOWN",
+            "eventChangeStatus": "none",
+            "virtual": false,
+            "addOns": [
+                {
+                    "type": "Parking",
+                    "options": [
+                        {
+                            "name": "Raiders vs Titans Parking",
+                            "url": "https://www.ticketmaster.com/raiders-vs-titans-parking-las-vegas-nevada-12-27-2026/event/1700646CC66CC9AD"
+                        }
+                    ]
+                },
+                {
+                    "type": "Special Entry",
+                    "options": [
+                        {
+                            "name": "Las Vegas Raiders vs Dolphins - MASQUERAID",
+                            "url": "https://www.ticketmaster.com/las-vegas-raiders-vs-dolphins-masqueraid-las-vegas-nevada-09-13-2026/event/170064A8BD491606"
+                        }
+                    ]
+                }
+            ],
+            "artists": [
+                {
+                    "name": "Las Vegas Raiders",
+                    "url": "https://www.ticketmaster.com/las-vegas-raiders-tickets/artist/805994",
+                    "imageUrls": {
+                        "ARTIST_PAGE_3_2": "https://s1.ticketm.net/dam/a/608/ad100b89-b729-4822-8165-5b626c21a608_1325251_ARTIST_PAGE_3_2.jpg",
+                        "RETINA_PORTRAIT_16_9": "https://s1.ticketm.net/dam/a/608/ad100b89-b729-4822-8165-5b626c21a608_1325251_RETINA_PORTRAIT_16_9.jpg"
+                    }
+                },
+                {
+                    "name": "Tennessee Titans",
+                    "url": "https://www.ticketmaster.com/tennessee-titans-tickets/artist/806030",
+                    "imageUrls": {
+                        "ARTIST_PAGE_3_2": "https://s1.ticketm.net/dam/a/6f9/9e85b4c2-0c0f-4f76-8c59-f521bf0226f9_ARTIST_PAGE_3_2.jpg",
+                        "RETINA_PORTRAIT_16_9": "https://s1.ticketm.net/dam/a/6f9/9e85b4c2-0c0f-4f76-8c59-f521bf0226f9_RETINA_PORTRAIT_16_9.jpg"
+                    }
+                }
+            ],
+            "majorCategory": {
+                "id": "KZFzniwnSyZfZ7v7nE",
+                "canonicalUrls": {},
+                "major": true
+            }
+        },
+        {
+            "title": "Las Vegas Raiders vs. Kansas City Chiefs | Official Hotel Packages",
+            "id": "170064B48CC2E985",
+            "discoveryId": "17AYv0G653GYmJA",
+            "dates": {
+                "dateDisplay": "showDateTime",
+                "startDate": "2026-10-04T20:25:00Z",
+                "onsaleDate": "2026-05-14T23:30:00Z",
+                "spanMultipleDays": false
+            },
+            "url": "https://travel.ticketmaster.com/en-US/package-forward/103568695?_uid=6ba7804c-af5d-42c9-81b7-7340d96a1080&utm_source=Raiders_TM&utm_medium=TM_ADP_LVRaidersVSKCChiefs",
+            "partnerEvent": true,
+            "isPartner": true,
+            "showTmButton": false,
+            "venue": {
+                "city": "Las Vegas",
+                "name": "Allegiant Stadium",
+                "country": "US",
+                "countryCode": "US",
+                "countryName": "United States",
+                "state": "NV",
+                "url": "https://www.ticketmaster.com/allegiant-stadium-tickets-las-vegas/venue/189482",
+                "imageUrl": "https://s1.ticketm.net/dbimages/23729v.jpg",
+                "latitude": 36.09090000,
+                "longitude": -115.18330000,
+                "addressLineOne": "3333 Al Davis Way",
+                "code": "89118"
+            },
+            "timeZone": "America/Los_Angeles",
+            "cancelled": false,
+            "postponed": false,
+            "rescheduled": false,
+            "tba": false,
+            "local": true,
+            "sameRegion": false,
+            "soldOut": false,
+            "limitedAvailability": false,
+            "eventChangeStatus": "none",
+            "virtual": false,
+            "artists": [
+                {
+                    "name": "Las Vegas Raiders",
+                    "url": "https://www.ticketmaster.com/las-vegas-raiders-tickets/artist/805994",
+                    "imageUrls": {
+                        "ARTIST_PAGE_3_2": "https://s1.ticketm.net/dam/a/608/ad100b89-b729-4822-8165-5b626c21a608_1325251_ARTIST_PAGE_3_2.jpg",
+                        "RETINA_PORTRAIT_16_9": "https://s1.ticketm.net/dam/a/608/ad100b89-b729-4822-8165-5b626c21a608_1325251_RETINA_PORTRAIT_16_9.jpg"
+                    }
+                },
+                {
+                    "name": "Kansas City Chiefs",
+                    "url": "https://www.ticketmaster.com/kansas-city-chiefs-tickets/artist/805955",
+                    "imageUrls": {
+                        "ARTIST_PAGE_3_2": "https://s1.ticketm.net/dam/a/a04/49007849-3947-4b1f-bbfb-55ece37a8a04_ARTIST_PAGE_3_2.jpg",
+                        "RETINA_PORTRAIT_16_9": "https://s1.ticketm.net/dam/a/a04/49007849-3947-4b1f-bbfb-55ece37a8a04_RETINA_PORTRAIT_16_9.jpg"
+                    }
+                }
+            ],
+            "majorCategory": {
+                "id": "KZFzniwnSyZfZ7v7nE",
+                "canonicalUrls": {},
+                "major": true
+            }
+        },
+        {
+            "title": "Dallas Cowboys vs. Tampa Bay Buccaneers",
+            "id": "0C00646CBCCA9087",
+            "discoveryId": "vvG1YZ_kwHwte6",
+            "dates": {
+                "dateDisplay": "showDateTime",
+                "startDate": "2026-10-09T00:15:00Z",
+                "onsaleDate": "2026-05-14T23:30:00Z",
+                "spanMultipleDays": false
+            },
+            "presaleDates": [
+                {
+                    "name": "Resale Onsale Only",
+                    "startDateTime": "2026-05-14T23:30:00Z",
+                    "endDateTime": "2026-05-15T04:00:00Z"
+                }
+            ],
+            "url": "https://www.ticketmaster.com/dallas-cowboys-vs-tampa-bay-buccaneers-arlington-texas-10-08-2026/event/0C00646CBCCA9087",
+            "seatmapUrl": "https://mapsapi.tmol.io/maps/geometry/3/event/0C00646CBCCA9087/staticImage?type=png&systemId=HOST",
+            "partnerEvent": false,
+            "isPartner": false,
+            "showTmButton": true,
+            "venue": {
+                "city": "Arlington",
+                "name": "AT&T Stadium",
+                "country": "US",
+                "countryCode": "US",
+                "countryName": "United States",
+                "state": "TX",
+                "url": "https://www.ticketmaster.com/att-stadium-tickets-arlington/venue/99096",
+                "imageUrl": "https://s1.ticketm.net/dbimages/18437v.jpg",
+                "latitude": 32.74790427,
+                "longitude": -97.09345578,
+                "addressLineOne": "One AT&T Way",
+                "code": "76011"
+            },
+            "timeZone": "America/Chicago",
+            "cancelled": false,
+            "postponed": false,
+            "rescheduled": false,
+            "tba": false,
+            "local": true,
+            "sameRegion": false,
+            "soldOut": false,
+            "limitedAvailability": false,
+            "ticketingStatus": "UNKNOWN",
+            "eventChangeStatus": "none",
+            "virtual": false,
+            "addOns": [
+                {
+                    "type": "Parking",
+                    "options": [
+                        {
+                            "name": "PARKING: AT&T Stadium - Cowboys v Buccaneers",
+                            "url": "https://www.ticketmaster.com/parking-att-stadium-cowboys-v-buccaneers-arlington-texas-10-08-2026/event/0C0064A4CD8ADA0F"
+                        }
+                    ]
+                },
+                {
+                    "type": "Meal Package",
+                    "options": [
+                        {
+                            "name": "STADIUM CLUB RESTAURANT: AT&T Stadium - Cowboys v Buccaneers",
+                            "url": "https://www.ticketmaster.com/stadium-club-restaurant-att-stadium-cowboys-arlington-texas-10-08-2026/event/0C0064A4D724E9E2"
+                        }
+                    ]
+                }
+            ],
+            "artists": [
+                {
+                    "name": "Dallas Cowboys",
+                    "url": "https://www.ticketmaster.com/dallas-cowboys-tickets/artist/805931",
+                    "imageUrls": {
+                        "ARTIST_PAGE_3_2": "https://s1.ticketm.net/dam/a/7e4/6f79c7fd-ac9a-4dba-97a6-1a6be82407e4_1325121_ARTIST_PAGE_3_2.jpg",
+                        "RETINA_PORTRAIT_16_9": "https://s1.ticketm.net/dam/a/7e4/6f79c7fd-ac9a-4dba-97a6-1a6be82407e4_1325121_RETINA_PORTRAIT_16_9.jpg"
+                    }
+                },
+                {
+                    "name": "Tampa Bay Buccaneers",
+                    "url": "https://www.ticketmaster.com/tampa-bay-buccaneers-tickets/artist/806026",
+                    "imageUrls": {
+                        "ARTIST_PAGE_3_2": "https://s1.ticketm.net/dam/a/a1c/6b5bfe16-4a07-4d42-a817-b94243f9aa1c_1325381_ARTIST_PAGE_3_2.jpg",
+                        "RETINA_PORTRAIT_16_9": "https://s1.ticketm.net/dam/a/a1c/6b5bfe16-4a07-4d42-a817-b94243f9aa1c_1325381_RETINA_PORTRAIT_16_9.jpg"
+                    }
+                }
+            ],
+            "majorCategory": {
+                "id": "KZFzniwnSyZfZ7v7nE",
+                "canonicalUrls": {},
+                "major": true
+            }
+        },
+        {
+            "title": "Carolina Panthers v Denver Broncos",
+            "id": "2D00646BB7D2EBE2",
+            "discoveryId": "G5eVZ_kmMVmRx",
+            "dates": {
+                "dateDisplay": "showDateTime",
+                "startDate": "2026-11-08T18:00:00Z",
+                "onsaleDate": "2026-05-15T01:00:00Z",
+                "spanMultipleDays": false
+            },
+            "presaleDates": [
+                {
+                    "name": "PSL Owners and Partners Pre-Sale",
+                    "startDateTime": "2026-05-15T00:00:00Z",
+                    "endDateTime": "2026-05-15T01:00:00Z"
+                },
+                {
+                    "name": "TSE/Stadium Presale",
+                    "startDateTime": "2026-05-15T00:30:00Z",
+                    "endDateTime": "2026-05-15T01:00:00Z"
+                },
+                {
+                    "name": "Resale",
+                    "startDateTime": "2026-05-14T23:30:00Z",
+                    "endDateTime": "2026-08-24T00:00:00Z"
+                }
+            ],
+            "url": "https://www.ticketmaster.com/carolina-panthers-v-denver-broncos-charlotte-north-carolina-11-08-2026/event/2D00646BB7D2EBE2",
+            "seatmapUrl": "https://mapsapi.tmol.io/maps/geometry/3/event/2D00646BB7D2EBE2/staticImage?type=png&systemId=HOST",
+            "partnerEvent": false,
+            "isPartner": false,
+            "showTmButton": true,
+            "venue": {
+                "city": "Charlotte",
+                "name": "Bank of America Stadium",
+                "country": "US",
+                "countryCode": "US",
+                "countryName": "United States",
+                "state": "NC",
+                "url": "https://www.ticketmaster.com/bank-of-america-stadium-tickets-charlotte/venue/368876",
+                "imageUrl": "https://s1.ticketm.net/dbimages/22383v.jpg",
+                "latitude": 35.225789,
+                "longitude": -80.852829,
+                "addressLineOne": "800 South Mint Street",
+                "code": "28202"
+            },
+            "timeZone": "America/New_York",
+            "cancelled": false,
+            "postponed": false,
+            "rescheduled": false,
+            "tba": false,
+            "local": true,
+            "sameRegion": false,
+            "soldOut": false,
+            "limitedAvailability": false,
+            "ticketingStatus": "UNKNOWN",
+            "eventChangeStatus": "none",
+            "virtual": false,
+            "artists": [
+                {
+                    "name": "Carolina Panthers",
+                    "url": "https://www.ticketmaster.com/carolina-panthers-tickets/artist/805909",
+                    "imageUrls": {
+                        "ARTIST_PAGE_3_2": "https://s1.ticketm.net/dam/a/340/8f54cfaa-27bc-4e1d-a7ea-dd5e71782340_1325021_ARTIST_PAGE_3_2.jpg",
+                        "RETINA_PORTRAIT_16_9": "https://s1.ticketm.net/dam/a/340/8f54cfaa-27bc-4e1d-a7ea-dd5e71782340_1325021_RETINA_PORTRAIT_16_9.jpg"
+                    }
+                },
+                {
+                    "name": "Denver Broncos",
+                    "url": "https://www.ticketmaster.com/denver-broncos-tickets/artist/805934",
+                    "imageUrls": {
+                        "ARTIST_PAGE_3_2": "https://s1.ticketm.net/dam/a/ba2/62335f87-41c3-41a5-a44b-7f017e2bbba2_ARTIST_PAGE_3_2.jpg",
+                        "RETINA_PORTRAIT_16_9": "https://s1.ticketm.net/dam/a/ba2/62335f87-41c3-41a5-a44b-7f017e2bbba2_RETINA_PORTRAIT_16_9.jpg"
+                    }
+                }
+            ],
+            "majorCategory": {
+                "id": "KZFzniwnSyZfZ7v7nE",
+                "canonicalUrls": {},
+                "major": true
+            }
+        },
+        {
+            "title": "Tampa Bay Buccaneers v New Orleans Saints",
+            "id": "0D00645AC824FC01",
+            "discoveryId": "vvG1VZ_AlFa2Yv",
+            "dates": {
+                "dateDisplay": "showDateTime",
+                "startDate": "2026-12-20T18:00:00Z",
+                "onsaleDate": "2026-05-14T23:30:00Z",
+                "spanMultipleDays": false
+            },
+            "url": "https://www.ticketmaster.com/tampa-bay-buccaneers-v-new-orleans-tampa-florida-12-20-2026/event/0D00645AC824FC01",
+            "seatmapUrl": "https://mapsapi.tmol.io/maps/geometry/3/event/0D00645AC824FC01/staticImage?type=png&systemId=HOST",
+            "partnerEvent": false,
+            "isPartner": false,
+            "showTmButton": true,
+            "venue": {
+                "city": "Tampa",
+                "name": "Raymond James Stadium",
+                "country": "US",
+                "countryCode": "US",
+                "countryName": "United States",
+                "state": "FL",
+                "url": "https://www.ticketmaster.com/raymond-james-stadium-tickets-tampa/venue/106526",
+                "imageUrl": "https://s1.ticketm.net/dbimages/5858v.gif",
+                "latitude": 27.975976,
+                "longitude": -82.503474,
+                "addressLineOne": "4201 North Dale Mabry Highway",
+                "code": "33607"
+            },
+            "timeZone": "America/New_York",
+            "cancelled": false,
+            "postponed": false,
+            "rescheduled": false,
+            "tba": false,
+            "local": true,
+            "sameRegion": false,
+            "soldOut": false,
+            "limitedAvailability": false,
+            "ticketingStatus": "UNKNOWN",
+            "eventChangeStatus": "none",
+            "virtual": false,
+            "addOns": [
+                {
+                    "type": "Parking",
+                    "options": [
+                        {
+                            "name": "Parking: Tampa Bay Buccaneers v New Orleans Saints",
+                            "url": "https://www.ticketmaster.com/parking-tampa-bay-buccaneers-v-new-tampa-florida-12-20-2026/event/0D006463DE71E0A5"
+                        }
+                    ]
+                }
+            ],
+            "artists": [
+                {
+                    "name": "Tampa Bay Buccaneers",
+                    "url": "https://www.ticketmaster.com/tampa-bay-buccaneers-tickets/artist/806026",
+                    "imageUrls": {
+                        "ARTIST_PAGE_3_2": "https://s1.ticketm.net/dam/a/a1c/6b5bfe16-4a07-4d42-a817-b94243f9aa1c_1325381_ARTIST_PAGE_3_2.jpg",
+                        "RETINA_PORTRAIT_16_9": "https://s1.ticketm.net/dam/a/a1c/6b5bfe16-4a07-4d42-a817-b94243f9aa1c_1325381_RETINA_PORTRAIT_16_9.jpg"
+                    }
+                },
+                {
+                    "name": "New Orleans Saints",
+                    "url": "https://www.ticketmaster.com/new-orleans-saints-tickets/artist/805984",
+                    "imageUrls": {
+                        "ARTIST_PAGE_3_2": "https://s1.ticketm.net/dam/a/86d/0dcfe694-65df-44e1-bb73-0263fdb7f86d_1325401_ARTIST_PAGE_3_2.jpg",
+                        "RETINA_PORTRAIT_16_9": "https://s1.ticketm.net/dam/a/86d/0dcfe694-65df-44e1-bb73-0263fdb7f86d_1325401_RETINA_PORTRAIT_16_9.jpg"
+                    }
+                }
+            ],
+            "majorCategory": {
+                "id": "KZFzniwnSyZfZ7v7nE",
+                "canonicalUrls": {},
+                "major": true
+            }
+        },
+        {
+            "title": "New York Jets v. Las Vegas Raiders",
+            "id": "00006488E1880E4F",
+            "discoveryId": "k7vGF_FN-xZy2",
+            "dates": {
+                "dateDisplay": "showDateTime",
+                "startDate": "2026-11-01T18:00:00Z",
+                "onsaleDate": "2026-05-15T16:00:00Z",
+                "spanMultipleDays": false
+            },
+            "presaleDates": [
+                {
+                    "name": "Amex Presale Tickets®",
+                    "startDateTime": "2026-05-14T23:30:00Z",
+                    "endDateTime": "2026-05-15T15:59:00Z"
+                },
+                {
+                    "name": "STM Offer",
+                    "startDateTime": "2026-05-14T23:30:00Z",
+                    "endDateTime": "2026-05-18T15:59:00Z"
+                }
+            ],
+            "url": "https://www.ticketmaster.com/new-york-jets-v-las-vegas-east-rutherford-new-jersey-11-01-2026/event/00006488E1880E4F",
+            "seatmapUrl": "https://mapsapi.tmol.io/maps/geometry/3/event/00006488E1880E4F/staticImage?type=png&systemId=HOST",
+            "partnerEvent": false,
+            "isPartner": false,
+            "showTmButton": true,
+            "venue": {
+                "city": "East Rutherford",
+                "name": "MetLife Stadium",
+                "country": "US",
+                "countryCode": "US",
+                "countryName": "United States",
+                "state": "NJ",
+                "url": "https://www.ticketmaster.com/metlife-stadium-tickets-east-rutherford/venue/1233",
+                "imageUrl": "https://s1.ticketm.net/dbimages/22874v.jpg",
+                "latitude": 40.81359,
+                "longitude": -74.074493,
+                "addressLineOne": "One MetLife Stadium Drive",
+                "code": "07073"
+            },
+            "timeZone": "America/New_York",
+            "cancelled": false,
+            "postponed": false,
+            "rescheduled": false,
+            "tba": false,
+            "local": true,
+            "sameRegion": false,
+            "soldOut": false,
+            "limitedAvailability": false,
+            "ticketingStatus": "UNKNOWN",
+            "eventChangeStatus": "none",
+            "virtual": false,
+            "addOns": [
+                {
+                    "type": "Parking",
+                    "options": [
+                        {
+                            "name": "New York Jets v. Las Vegas Raiders: Parking Pass",
+                            "url": "https://www.ticketmaster.com/new-york-jets-v-las-vegas-east-rutherford-new-jersey-11-01-2026/event/00006488E331131B"
+                        }
+                    ]
+                }
+            ],
+            "artists": [
+                {
+                    "name": "New York Jets",
+                    "url": "https://www.ticketmaster.com/new-york-jets-tickets/artist/805987",
+                    "imageUrls": {
+                        "ARTIST_PAGE_3_2": "https://s1.ticketm.net/dam/a/d64/bc7ee1fb-9740-4578-9a39-9006c9821d64_ARTIST_PAGE_3_2.jpg",
+                        "RETINA_PORTRAIT_16_9": "https://s1.ticketm.net/dam/a/d64/bc7ee1fb-9740-4578-9a39-9006c9821d64_RETINA_PORTRAIT_16_9.jpg"
+                    }
+                },
+                {
+                    "name": "Las Vegas Raiders",
+                    "url": "https://www.ticketmaster.com/las-vegas-raiders-tickets/artist/805994",
+                    "imageUrls": {
+                        "ARTIST_PAGE_3_2": "https://s1.ticketm.net/dam/a/608/ad100b89-b729-4822-8165-5b626c21a608_1325251_ARTIST_PAGE_3_2.jpg",
+                        "RETINA_PORTRAIT_16_9": "https://s1.ticketm.net/dam/a/608/ad100b89-b729-4822-8165-5b626c21a608_1325251_RETINA_PORTRAIT_16_9.jpg"
+                    }
+                }
+            ],
+            "majorCategory": {
+                "id": "KZFzniwnSyZfZ7v7nE",
+                "canonicalUrls": {},
+                "major": true
+            }
+        },
+        {
+            "title": "Official Las Vegas Raiders Ticket + Hotel Packages",
+            "id": "170064AFBFECD77F",
+            "discoveryId": "17AYv0G61XTDuqT",
+            "dates": {
+                "dateDisplay": "showDateTime",
+                "startDate": "2026-05-16T00:00:00Z",
+                "onsaleDate": "2026-05-06T00:00:00Z",
+                "spanMultipleDays": true
+            },
+            "url": "https://travel.ticketmaster.com/en-US/attraction/913?_uid=6ba7804c-af5d-42c9-81b7-7340d96a1080&utm_source=Raiders_TM&utm_medium=TM_ADP_LasVegasRaiders",
+            "partnerEvent": true,
+            "isPartner": true,
+            "showTmButton": false,
+            "venue": {
+                "city": "Las Vegas",
+                "name": "Allegiant Stadium",
+                "country": "US",
+                "countryCode": "US",
+                "countryName": "United States",
+                "state": "NV",
+                "url": "https://www.ticketmaster.com/allegiant-stadium-tickets-las-vegas/venue/189482",
+                "imageUrl": "https://s1.ticketm.net/dbimages/23729v.jpg",
+                "latitude": 36.09090000,
+                "longitude": -115.18330000,
+                "addressLineOne": "3333 Al Davis Way",
+                "code": "89118"
+            },
+            "timeZone": "America/Los_Angeles",
+            "cancelled": false,
+            "postponed": false,
+            "rescheduled": false,
+            "tba": false,
+            "local": true,
+            "sameRegion": false,
+            "soldOut": false,
+            "limitedAvailability": false,
+            "eventChangeStatus": "none",
+            "virtual": false,
+            "artists": [
+                {
+                    "name": "Las Vegas Raiders",
+                    "url": "https://www.ticketmaster.com/las-vegas-raiders-tickets/artist/805994",
+                    "imageUrls": {
+                        "ARTIST_PAGE_3_2": "https://s1.ticketm.net/dam/a/608/ad100b89-b729-4822-8165-5b626c21a608_1325251_ARTIST_PAGE_3_2.jpg",
+                        "RETINA_PORTRAIT_16_9": "https://s1.ticketm.net/dam/a/608/ad100b89-b729-4822-8165-5b626c21a608_1325251_RETINA_PORTRAIT_16_9.jpg"
+                    }
+                }
+            ],
+            "majorCategory": {
+                "id": "KZFzniwnSyZfZ7v7nE",
+                "canonicalUrls": {},
+                "major": true
+            }
+        },
+        {
+            "title": "Carolina Panthers v Baltimore Ravens",
+            "id": "2D00646BB5F2E875",
+            "discoveryId": "G5eVZ_kmgHm-g",
+            "dates": {
+                "dateDisplay": "showDateTime",
+                "startDate": "2026-11-22T18:00:00Z",
+                "onsaleDate": "2026-05-15T01:00:00Z",
+                "spanMultipleDays": false
+            },
+            "presaleDates": [
+                {
+                    "name": "PSL Owners and Partners Pre-Sale",
+                    "startDateTime": "2026-05-15T00:00:00Z",
+                    "endDateTime": "2026-05-15T01:00:00Z"
+                },
+                {
+                    "name": "TSE/Stadium Presale",
+                    "startDateTime": "2026-05-15T00:30:00Z",
+                    "endDateTime": "2026-05-15T01:00:00Z"
+                },
+                {
+                    "name": "Resale",
+                    "startDateTime": "2026-05-14T23:30:00Z",
+                    "endDateTime": "2026-08-24T00:00:00Z"
+                }
+            ],
+            "url": "https://www.ticketmaster.com/carolina-panthers-v-baltimore-ravens-charlotte-north-carolina-11-22-2026/event/2D00646BB5F2E875",
+            "seatmapUrl": "https://mapsapi.tmol.io/maps/geometry/3/event/2D00646BB5F2E875/staticImage?type=png&systemId=HOST",
+            "partnerEvent": false,
+            "isPartner": false,
+            "showTmButton": true,
+            "venue": {
+                "city": "Charlotte",
+                "name": "Bank of America Stadium",
+                "country": "US",
+                "countryCode": "US",
+                "countryName": "United States",
+                "state": "NC",
+                "url": "https://www.ticketmaster.com/bank-of-america-stadium-tickets-charlotte/venue/368876",
+                "imageUrl": "https://s1.ticketm.net/dbimages/22383v.jpg",
+                "latitude": 35.225789,
+                "longitude": -80.852829,
+                "addressLineOne": "800 South Mint Street",
+                "code": "28202"
+            },
+            "timeZone": "America/New_York",
+            "cancelled": false,
+            "postponed": false,
+            "rescheduled": false,
+            "tba": false,
+            "local": true,
+            "sameRegion": false,
+            "soldOut": false,
+            "limitedAvailability": false,
+            "ticketingStatus": "UNKNOWN",
+            "eventChangeStatus": "none",
+            "virtual": false,
+            "artists": [
+                {
+                    "name": "Carolina Panthers",
+                    "url": "https://www.ticketmaster.com/carolina-panthers-tickets/artist/805909",
+                    "imageUrls": {
+                        "ARTIST_PAGE_3_2": "https://s1.ticketm.net/dam/a/340/8f54cfaa-27bc-4e1d-a7ea-dd5e71782340_1325021_ARTIST_PAGE_3_2.jpg",
+                        "RETINA_PORTRAIT_16_9": "https://s1.ticketm.net/dam/a/340/8f54cfaa-27bc-4e1d-a7ea-dd5e71782340_1325021_RETINA_PORTRAIT_16_9.jpg"
+                    }
+                },
+                {
+                    "name": "Baltimore Ravens",
+                    "url": "https://www.ticketmaster.com/baltimore-ravens-tickets/artist/805901",
+                    "imageUrls": {
+                        "ARTIST_PAGE_3_2": "https://s1.ticketm.net/dam/a/917/44decbb0-0df0-43b3-a8ee-0814e49a4917_1324971_ARTIST_PAGE_3_2.jpg",
+                        "RETINA_PORTRAIT_16_9": "https://s1.ticketm.net/dam/a/917/44decbb0-0df0-43b3-a8ee-0814e49a4917_1324971_RETINA_PORTRAIT_16_9.jpg"
+                    }
+                }
+            ],
+            "majorCategory": {
+                "id": "KZFzniwnSyZfZ7v7nE",
+                "canonicalUrls": {},
+                "major": true
+            }
+        },
+        {
+            "title": "Las Vegas Raiders vs. Miami Dolphins | Official Hotel Packages",
+            "id": "170064B48CC7E994",
+            "discoveryId": "17AYv0G653GsXJf",
+            "dates": {
+                "dateDisplay": "showDateTime",
+                "startDate": "2026-09-13T20:25:00Z",
+                "onsaleDate": "2026-05-14T23:30:00Z",
+                "spanMultipleDays": false
+            },
+            "url": "https://travel.ticketmaster.com/en-US/package-forward/103568694?_uid=6ba7804c-af5d-42c9-81b7-7340d96a1080&utm_source=Raiders_TM&utm_medium=TM_ADP_LVRaidersVSDolphins",
+            "partnerEvent": true,
+            "isPartner": true,
+            "showTmButton": false,
+            "venue": {
+                "city": "Las Vegas",
+                "name": "Allegiant Stadium",
+                "country": "US",
+                "countryCode": "US",
+                "countryName": "United States",
+                "state": "NV",
+                "url": "https://www.ticketmaster.com/allegiant-stadium-tickets-las-vegas/venue/189482",
+                "imageUrl": "https://s1.ticketm.net/dbimages/23729v.jpg",
+                "latitude": 36.09090000,
+                "longitude": -115.18330000,
+                "addressLineOne": "3333 Al Davis Way",
+                "code": "89118"
+            },
+            "timeZone": "America/Los_Angeles",
+            "cancelled": false,
+            "postponed": false,
+            "rescheduled": false,
+            "tba": false,
+            "local": true,
+            "sameRegion": false,
+            "soldOut": false,
+            "limitedAvailability": false,
+            "eventChangeStatus": "none",
+            "virtual": false,
+            "artists": [
+                {
+                    "name": "Las Vegas Raiders",
+                    "url": "https://www.ticketmaster.com/las-vegas-raiders-tickets/artist/805994",
+                    "imageUrls": {
+                        "ARTIST_PAGE_3_2": "https://s1.ticketm.net/dam/a/608/ad100b89-b729-4822-8165-5b626c21a608_1325251_ARTIST_PAGE_3_2.jpg",
+                        "RETINA_PORTRAIT_16_9": "https://s1.ticketm.net/dam/a/608/ad100b89-b729-4822-8165-5b626c21a608_1325251_RETINA_PORTRAIT_16_9.jpg"
+                    }
+                },
+                {
+                    "name": "Miami Dolphins",
+                    "url": "https://www.ticketmaster.com/miami-dolphins-tickets/artist/805964",
+                    "imageUrls": {
+                        "ARTIST_PAGE_3_2": "https://s1.ticketm.net/dam/a/d39/4b18e97c-4544-448e-8163-8c158d23bd39_1325311_ARTIST_PAGE_3_2.jpg",
+                        "RETINA_PORTRAIT_16_9": "https://s1.ticketm.net/dam/a/d39/4b18e97c-4544-448e-8163-8c158d23bd39_1325311_RETINA_PORTRAIT_16_9.jpg"
+                    }
+                }
+            ],
+            "majorCategory": {
+                "id": "KZFzniwnSyZfZ7v7nE",
+                "canonicalUrls": {},
+                "major": true
+            }
+        },
+        {
+            "title": "Las Vegas Raiders vs. Buffalo Bills | Official Hotel Packages",
+            "id": "170064B48CCBE9A2",
+            "discoveryId": "17AYv0G653GwXJx",
+            "dates": {
+                "dateDisplay": "showDateTime",
+                "startDate": "2026-10-18T20:25:00Z",
+                "onsaleDate": "2026-05-14T23:30:00Z",
+                "spanMultipleDays": false
+            },
+            "url": "https://travel.ticketmaster.com/en-US/package-forward/103568772?_uid=6ba7804c-af5d-42c9-81b7-7340d96a1080&utm_source=Raiders_TM&utm_medium=TM_ADP_LVRaidersVSBills",
+            "partnerEvent": true,
+            "isPartner": true,
+            "showTmButton": false,
+            "venue": {
+                "city": "Las Vegas",
+                "name": "Allegiant Stadium",
+                "country": "US",
+                "countryCode": "US",
+                "countryName": "United States",
+                "state": "NV",
+                "url": "https://www.ticketmaster.com/allegiant-stadium-tickets-las-vegas/venue/189482",
+                "imageUrl": "https://s1.ticketm.net/dbimages/23729v.jpg",
+                "latitude": 36.09090000,
+                "longitude": -115.18330000,
+                "addressLineOne": "3333 Al Davis Way",
+                "code": "89118"
+            },
+            "timeZone": "America/Los_Angeles",
+            "cancelled": false,
+            "postponed": false,
+            "rescheduled": false,
+            "tba": false,
+            "local": true,
+            "sameRegion": false,
+            "soldOut": false,
+            "limitedAvailability": false,
+            "eventChangeStatus": "none",
+            "virtual": false,
+            "artists": [
+                {
+                    "name": "Las Vegas Raiders",
+                    "url": "https://www.ticketmaster.com/las-vegas-raiders-tickets/artist/805994",
+                    "imageUrls": {
+                        "ARTIST_PAGE_3_2": "https://s1.ticketm.net/dam/a/608/ad100b89-b729-4822-8165-5b626c21a608_1325251_ARTIST_PAGE_3_2.jpg",
+                        "RETINA_PORTRAIT_16_9": "https://s1.ticketm.net/dam/a/608/ad100b89-b729-4822-8165-5b626c21a608_1325251_RETINA_PORTRAIT_16_9.jpg"
+                    }
+                },
+                {
+                    "name": "Buffalo Bills",
+                    "url": "https://www.ticketmaster.com/buffalo-bills-tickets/artist/805905",
+                    "imageUrls": {
+                        "ARTIST_PAGE_3_2": "https://s1.ticketm.net/dam/a/b37/f62cde9b-e0b9-4791-8d0b-929f42b7bb37_1325001_ARTIST_PAGE_3_2.jpg",
+                        "RETINA_PORTRAIT_16_9": "https://s1.ticketm.net/dam/a/b37/f62cde9b-e0b9-4791-8d0b-929f42b7bb37_1325001_RETINA_PORTRAIT_16_9.jpg"
+                    }
+                }
+            ],
+            "majorCategory": {
+                "id": "KZFzniwnSyZfZ7v7nE",
+                "canonicalUrls": {},
+                "major": true
+            }
+        },
+        {
+            "title": "Las Vegas Raiders vs. Seattle Seahawks | Official Hotel Packages",
+            "id": "170064B48CCAE99D",
+            "discoveryId": "17AYv0G653GwmJq",
+            "dates": {
+                "dateDisplay": "showDateTime",
+                "startDate": "2026-11-15T21:05:00Z",
+                "onsaleDate": "2026-05-14T23:30:00Z",
+                "spanMultipleDays": false
+            },
+            "url": "https://travel.ticketmaster.com/en-US/package-forward/103568734?_uid=6ba7804c-af5d-42c9-81b7-7340d96a1080&utm_source=Raiders_TM&utm_medium=TM_ADP_LVRaidersVSSeahawks",
+            "partnerEvent": true,
+            "isPartner": true,
+            "showTmButton": false,
+            "venue": {
+                "city": "Las Vegas",
+                "name": "Allegiant Stadium",
+                "country": "US",
+                "countryCode": "US",
+                "countryName": "United States",
+                "state": "NV",
+                "url": "https://www.ticketmaster.com/allegiant-stadium-tickets-las-vegas/venue/189482",
+                "imageUrl": "https://s1.ticketm.net/dbimages/23729v.jpg",
+                "latitude": 36.09090000,
+                "longitude": -115.18330000,
+                "addressLineOne": "3333 Al Davis Way",
+                "code": "89118"
+            },
+            "timeZone": "America/Los_Angeles",
+            "cancelled": false,
+            "postponed": false,
+            "rescheduled": false,
+            "tba": false,
+            "local": true,
+            "sameRegion": false,
+            "soldOut": false,
+            "limitedAvailability": false,
+            "eventChangeStatus": "none",
+            "virtual": false,
+            "artists": [
+                {
+                    "name": "Las Vegas Raiders",
+                    "url": "https://www.ticketmaster.com/las-vegas-raiders-tickets/artist/805994",
+                    "imageUrls": {
+                        "ARTIST_PAGE_3_2": "https://s1.ticketm.net/dam/a/608/ad100b89-b729-4822-8165-5b626c21a608_1325251_ARTIST_PAGE_3_2.jpg",
+                        "RETINA_PORTRAIT_16_9": "https://s1.ticketm.net/dam/a/608/ad100b89-b729-4822-8165-5b626c21a608_1325251_RETINA_PORTRAIT_16_9.jpg"
+                    }
+                },
+                {
+                    "name": "Seattle Seahawks",
+                    "url": "https://www.ticketmaster.com/seattle-seahawks-tickets/artist/806020",
+                    "imageUrls": {
+                        "ARTIST_PAGE_3_2": "https://s1.ticketm.net/dam/a/2db/0bae3d29-946e-44fd-aebd-2618ce30b2db_ARTIST_PAGE_3_2.jpg",
+                        "RETINA_PORTRAIT_16_9": "https://s1.ticketm.net/dam/a/2db/0bae3d29-946e-44fd-aebd-2618ce30b2db_RETINA_PORTRAIT_16_9.jpg"
+                    }
+                }
+            ],
+            "majorCategory": {
+                "id": "KZFzniwnSyZfZ7v7nE",
+                "canonicalUrls": {},
+                "major": true
+            }
+        },
+        {
+            "title": "Las Vegas Raiders vs. Denver Broncos | Official Hotel Packages",
+            "id": "170064B48CC8E997",
+            "discoveryId": "17AYv0G653GwCJ9",
+            "dates": {
+                "dateDisplay": "showDateTime",
+                "startDate": "2026-12-20T21:25:00Z",
+                "onsaleDate": "2026-05-14T23:30:00Z",
+                "spanMultipleDays": false
+            },
+            "url": "https://travel.ticketmaster.com/en-US/package-forward/103569267?_uid=6ba7804c-af5d-42c9-81b7-7340d96a1080&utm_source=Raiders_TM&utm_medium=TM_ADP_LVRaidersVSBroncos",
+            "partnerEvent": true,
+            "isPartner": true,
+            "showTmButton": false,
+            "venue": {
+                "city": "Las Vegas",
+                "name": "Allegiant Stadium",
+                "country": "US",
+                "countryCode": "US",
+                "countryName": "United States",
+                "state": "NV",
+                "url": "https://www.ticketmaster.com/allegiant-stadium-tickets-las-vegas/venue/189482",
+                "imageUrl": "https://s1.ticketm.net/dbimages/23729v.jpg",
+                "latitude": 36.09090000,
+                "longitude": -115.18330000,
+                "addressLineOne": "3333 Al Davis Way",
+                "code": "89118"
+            },
+            "timeZone": "America/Los_Angeles",
+            "cancelled": false,
+            "postponed": false,
+            "rescheduled": false,
+            "tba": false,
+            "local": true,
+            "sameRegion": false,
+            "soldOut": false,
+            "limitedAvailability": false,
+            "eventChangeStatus": "none",
+            "virtual": false,
+            "artists": [
+                {
+                    "name": "Las Vegas Raiders",
+                    "url": "https://www.ticketmaster.com/las-vegas-raiders-tickets/artist/805994",
+                    "imageUrls": {
+                        "ARTIST_PAGE_3_2": "https://s1.ticketm.net/dam/a/608/ad100b89-b729-4822-8165-5b626c21a608_1325251_ARTIST_PAGE_3_2.jpg",
+                        "RETINA_PORTRAIT_16_9": "https://s1.ticketm.net/dam/a/608/ad100b89-b729-4822-8165-5b626c21a608_1325251_RETINA_PORTRAIT_16_9.jpg"
+                    }
+                },
+                {
+                    "name": "Denver Broncos",
+                    "url": "https://www.ticketmaster.com/denver-broncos-tickets/artist/805934",
+                    "imageUrls": {
+                        "ARTIST_PAGE_3_2": "https://s1.ticketm.net/dam/a/ba2/62335f87-41c3-41a5-a44b-7f017e2bbba2_ARTIST_PAGE_3_2.jpg",
+                        "RETINA_PORTRAIT_16_9": "https://s1.ticketm.net/dam/a/ba2/62335f87-41c3-41a5-a44b-7f017e2bbba2_RETINA_PORTRAIT_16_9.jpg"
+                    }
+                }
+            ],
+            "majorCategory": {
+                "id": "KZFzniwnSyZfZ7v7nE",
+                "canonicalUrls": {},
+                "major": true
+            }
+        },
+        {
+            "title": "Las Vegas Raiders vs. Tennessee Titans | Official Hotel Packages",
+            "id": "170064B48CC4E98C",
+            "discoveryId": "17AYv0G653GsCJG",
+            "dates": {
+                "dateDisplay": "showDateTime",
+                "startDate": "2026-12-27T21:05:00Z",
+                "onsaleDate": "2026-05-14T23:30:00Z",
+                "spanMultipleDays": false
+            },
+            "url": "https://travel.ticketmaster.com/en-US/package-forward/103568662?_uid=6ba7804c-af5d-42c9-81b7-7340d96a1080&utm_source=Raiders_TM&utm_medium=TM_ADP_LVRaidersVSTitans",
+            "partnerEvent": true,
+            "isPartner": true,
+            "showTmButton": false,
+            "venue": {
+                "city": "Las Vegas",
+                "name": "Allegiant Stadium",
+                "country": "US",
+                "countryCode": "US",
+                "countryName": "United States",
+                "state": "NV",
+                "url": "https://www.ticketmaster.com/allegiant-stadium-tickets-las-vegas/venue/189482",
+                "imageUrl": "https://s1.ticketm.net/dbimages/23729v.jpg",
+                "latitude": 36.09090000,
+                "longitude": -115.18330000,
+                "addressLineOne": "3333 Al Davis Way",
+                "code": "89118"
+            },
+            "timeZone": "America/Los_Angeles",
+            "cancelled": false,
+            "postponed": false,
+            "rescheduled": false,
+            "tba": false,
+            "local": true,
+            "sameRegion": false,
+            "soldOut": false,
+            "limitedAvailability": false,
+            "eventChangeStatus": "none",
+            "virtual": false,
+            "artists": [
+                {
+                    "name": "Las Vegas Raiders",
+                    "url": "https://www.ticketmaster.com/las-vegas-raiders-tickets/artist/805994",
+                    "imageUrls": {
+                        "ARTIST_PAGE_3_2": "https://s1.ticketm.net/dam/a/608/ad100b89-b729-4822-8165-5b626c21a608_1325251_ARTIST_PAGE_3_2.jpg",
+                        "RETINA_PORTRAIT_16_9": "https://s1.ticketm.net/dam/a/608/ad100b89-b729-4822-8165-5b626c21a608_1325251_RETINA_PORTRAIT_16_9.jpg"
+                    }
+                },
+                {
+                    "name": "Tennessee Titans",
+                    "url": "https://www.ticketmaster.com/tennessee-titans-tickets/artist/806030",
+                    "imageUrls": {
+                        "ARTIST_PAGE_3_2": "https://s1.ticketm.net/dam/a/6f9/9e85b4c2-0c0f-4f76-8c59-f521bf0226f9_ARTIST_PAGE_3_2.jpg",
+                        "RETINA_PORTRAIT_16_9": "https://s1.ticketm.net/dam/a/6f9/9e85b4c2-0c0f-4f76-8c59-f521bf0226f9_RETINA_PORTRAIT_16_9.jpg"
+                    }
+                }
+            ],
+            "majorCategory": {
+                "id": "KZFzniwnSyZfZ7v7nE",
+                "canonicalUrls": {},
+                "major": true
+            }
+        },
+        {
+            "title": "Las Vegas Raiders vs. Los Angeles Chargers | Official Hotel Packages",
+            "id": "170064B48CCDE9A7",
+            "discoveryId": "17AYv0G653GSrJE",
+            "dates": {
+                "dateDisplay": "showDateTime",
+                "startDate": "2026-12-13T21:05:00Z",
+                "onsaleDate": "2026-05-14T23:30:00Z",
+                "spanMultipleDays": false
+            },
+            "url": "https://travel.ticketmaster.com/en-US/package-forward/103569242?_uid=6ba7804c-af5d-42c9-81b7-7340d96a1080&utm_source=Raiders_TM&utm_medium=TM_ADP_LVRaidersVSLAChargers",
+            "partnerEvent": true,
+            "isPartner": true,
+            "showTmButton": false,
+            "venue": {
+                "city": "Las Vegas",
+                "name": "Allegiant Stadium",
+                "country": "US",
+                "countryCode": "US",
+                "countryName": "United States",
+                "state": "NV",
+                "url": "https://www.ticketmaster.com/allegiant-stadium-tickets-las-vegas/venue/189482",
+                "imageUrl": "https://s1.ticketm.net/dbimages/23729v.jpg",
+                "latitude": 36.09090000,
+                "longitude": -115.18330000,
+                "addressLineOne": "3333 Al Davis Way",
+                "code": "89118"
+            },
+            "timeZone": "America/Los_Angeles",
+            "cancelled": false,
+            "postponed": false,
+            "rescheduled": false,
+            "tba": false,
+            "local": true,
+            "sameRegion": false,
+            "soldOut": false,
+            "limitedAvailability": false,
+            "eventChangeStatus": "none",
+            "virtual": false,
+            "artists": [
+                {
+                    "name": "Las Vegas Raiders",
+                    "url": "https://www.ticketmaster.com/las-vegas-raiders-tickets/artist/805994",
+                    "imageUrls": {
+                        "ARTIST_PAGE_3_2": "https://s1.ticketm.net/dam/a/608/ad100b89-b729-4822-8165-5b626c21a608_1325251_ARTIST_PAGE_3_2.jpg",
+                        "RETINA_PORTRAIT_16_9": "https://s1.ticketm.net/dam/a/608/ad100b89-b729-4822-8165-5b626c21a608_1325251_RETINA_PORTRAIT_16_9.jpg"
+                    }
+                },
+                {
+                    "name": "Los Angeles Chargers",
+                    "url": "https://www.ticketmaster.com/los-angeles-chargers-tickets/artist/806013",
+                    "imageUrls": {
+                        "ARTIST_PAGE_3_2": "https://s1.ticketm.net/dam/a/1b3/74185b13-c819-4c0a-aa1f-553bd8fe91b3_ARTIST_PAGE_3_2.jpg",
+                        "RETINA_PORTRAIT_16_9": "https://s1.ticketm.net/dam/a/1b3/74185b13-c819-4c0a-aa1f-553bd8fe91b3_RETINA_PORTRAIT_16_9.jpg"
+                    }
+                }
+            ],
+            "majorCategory": {
+                "id": "KZFzniwnSyZfZ7v7nE",
+                "canonicalUrls": {},
+                "major": true
+            }
+        },
+        {
+            "title": "New York Jets v. Green Bay Packers",
+            "id": "00006488E18E0E5F",
+            "discoveryId": "k7vGF_FN-NOyL",
+            "dates": {
+                "dateDisplay": "showDateTime",
+                "startDate": "2026-09-20T17:00:00Z",
+                "onsaleDate": "2026-05-15T16:00:00Z",
+                "spanMultipleDays": false
+            },
+            "presaleDates": [
+                {
+                    "name": "Amex Presale Tickets®",
+                    "startDateTime": "2026-05-14T23:30:00Z",
+                    "endDateTime": "2026-05-15T15:59:00Z"
+                },
+                {
+                    "name": "STM Offer",
+                    "startDateTime": "2026-05-14T23:30:00Z",
+                    "endDateTime": "2026-05-18T15:59:00Z"
+                }
+            ],
+            "url": "https://www.ticketmaster.com/new-york-jets-v-green-bay-east-rutherford-new-jersey-09-20-2026/event/00006488E18E0E5F",
+            "seatmapUrl": "https://mapsapi.tmol.io/maps/geometry/3/event/00006488E18E0E5F/staticImage?type=png&systemId=HOST",
+            "partnerEvent": false,
+            "isPartner": false,
+            "showTmButton": true,
+            "venue": {
+                "city": "East Rutherford",
+                "name": "MetLife Stadium",
+                "country": "US",
+                "countryCode": "US",
+                "countryName": "United States",
+                "state": "NJ",
+                "url": "https://www.ticketmaster.com/metlife-stadium-tickets-east-rutherford/venue/1233",
+                "imageUrl": "https://s1.ticketm.net/dbimages/22874v.jpg",
+                "latitude": 40.81359,
+                "longitude": -74.074493,
+                "addressLineOne": "One MetLife Stadium Drive",
+                "code": "07073"
+            },
+            "timeZone": "America/New_York",
+            "cancelled": false,
+            "postponed": false,
+            "rescheduled": false,
+            "tba": false,
+            "local": true,
+            "sameRegion": false,
+            "soldOut": false,
+            "limitedAvailability": false,
+            "ticketingStatus": "UNKNOWN",
+            "eventChangeStatus": "none",
+            "virtual": false,
+            "addOns": [
+                {
+                    "type": "Parking",
+                    "options": [
+                        {
+                            "name": "New York Jets v. Green Bay Packers: Parking Pass",
+                            "url": "https://www.ticketmaster.com/new-york-jets-v-green-bay-east-rutherford-new-jersey-09-20-2026/event/00006488E3361322"
+                        }
+                    ]
+                }
+            ],
+            "artists": [
+                {
+                    "name": "New York Jets",
+                    "url": "https://www.ticketmaster.com/new-york-jets-tickets/artist/805987",
+                    "imageUrls": {
+                        "ARTIST_PAGE_3_2": "https://s1.ticketm.net/dam/a/d64/bc7ee1fb-9740-4578-9a39-9006c9821d64_ARTIST_PAGE_3_2.jpg",
+                        "RETINA_PORTRAIT_16_9": "https://s1.ticketm.net/dam/a/d64/bc7ee1fb-9740-4578-9a39-9006c9821d64_RETINA_PORTRAIT_16_9.jpg"
+                    }
+                },
+                {
+                    "name": "Green Bay Packers",
+                    "url": "https://www.ticketmaster.com/green-bay-packers-tickets/artist/805947",
+                    "imageUrls": {
+                        "ARTIST_PAGE_3_2": "https://s1.ticketm.net/dam/a/b9c/8672b5d2-8318-4d78-b403-bd63ce0b6b9c_1325191_ARTIST_PAGE_3_2.jpg",
+                        "RETINA_PORTRAIT_16_9": "https://s1.ticketm.net/dam/a/b9c/8672b5d2-8318-4d78-b403-bd63ce0b6b9c_1325191_RETINA_PORTRAIT_16_9.jpg"
+                    }
+                }
+            ],
+            "majorCategory": {
+                "id": "KZFzniwnSyZfZ7v7nE",
+                "canonicalUrls": {},
+                "major": true
+            }
+        }
+    ],
+    "singleVenue": false
+}

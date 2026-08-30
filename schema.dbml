@@ -1,0 +1,212 @@
+// =====================================================================
+// Ticketmaster scraper schema
+// Sources:
+//   events   : discovery/search API            -> events.json
+//   facets   : services.ticketmaster.com/.../facets?show=places&compress=places&embed=offer
+//   manifest : pubapi.ticketmaster.com/sdk/static/manifest/v1/<eventId>
+//
+// Key conventions:
+//   - Natural composite primary keys (no surrogate auto-ids).
+//   - created_at   : first time we inserted the row.
+//   - updated_at   : last time a field value actually changed.
+//   - last_seen_at : last scrape run in which the row was present (bump every run).
+// =====================================================================
+
+Project ticketmaster_scraper {
+    database_type: 'PostgreSQL'
+    Note: 'Events, venues, artists, and per-event seat/section/offer availability scraped from Ticketmaster.'
+}
+
+Table venues {
+    id varchar [primary key, note: "events -> venue -> code (Ticketmaster's own id, not incremental; not always numeric)"]
+
+    name varchar
+    city varchar
+    state varchar
+    country varchar
+    country_code varchar
+    postal_code varchar
+    address_line_one varchar
+    latitude decimal(10,7)
+    longitude decimal(10,7)
+    url varchar
+    image_url varchar
+
+    created_at timestamp
+    updated_at timestamp
+    last_seen_at timestamp [note: "last scrape run this venue appeared in"]
+}
+
+Table events {
+    id varchar [primary key, note: "events -> id"]
+
+    discovery_id varchar [note: "events -> discoveryId"]
+    title varchar [not null, note: "events -> title"]
+
+    venue_id varchar [not null, note: "events -> venue -> code"]
+
+    start_date timestamp [note: "events -> dates -> startDate"]
+    end_date timestamp [note: "events -> dates -> endDate"]
+    onsale_date timestamp [note: "events -> dates -> onsaleDate"]
+    date_display varchar [note: "events -> dates -> dateDisplay"]
+    is_span_multiple_days boolean [note: "events -> dates -> spanMultipleDays"]
+
+    url varchar [note: "events -> url"]
+    upsell_landing_page_url varchar [note: "events -> upsellLandingPageUrl"]
+    seatmap_url varchar [note: "events -> seatmapUrl"]
+
+    is_partner_event boolean [note: "events -> partnerEvent"]
+    is_partner boolean [note: "events -> isPartner"]
+    is_tm_button_shown boolean [note: "events -> showTmButton"]
+
+    timezone varchar [note: "events -> timeZone"]
+
+    is_cancelled boolean [note: "events -> cancelled"]
+    is_postponed boolean [note: "events -> postponed"]
+    is_rescheduled boolean [note: "events -> rescheduled"]
+    is_tba boolean [note: "events -> tba"]
+    is_local boolean [note: "events -> local"]
+    is_same_region boolean [note: "events -> sameRegion"]
+    is_sold_out boolean [note: "events -> soldOut"]
+    is_limited_availability boolean [note: "events -> limitedAvailability"]
+    is_virtual boolean [note: "events -> virtual"]
+
+    event_change_status varchar [note: "events -> eventChangeStatus"]
+
+    created_at timestamp
+    updated_at timestamp
+    last_seen_at timestamp [note: "last scrape run this event appeared in; if stale -> dropped from feed"]
+
+    indexes {
+        discovery_id
+        venue_id
+        start_date
+    }
+}
+
+Table artists {
+    name varchar [primary key, not null, note: "events -> artists -> name"]
+    url varchar [note: "events -> artists -> url"]
+    image_url varchar [note: "events -> artists -> imageUrls -> ARTIST_PAGE_3_2"]
+    image_url_retina varchar [note: "events -> artists -> imageUrls -> RETINA_PORTRAIT_16_9"]
+
+    created_at timestamp
+    updated_at timestamp
+    last_seen_at timestamp [note: "last scrape run this artist appeared in"]
+}
+
+Table event_artists {
+    event_id varchar [not null]
+    artist_id varchar [not null]
+
+    created_at timestamp
+    last_seen_at timestamp [note: "last scrape run this event<->artist link appeared in"]
+
+    indexes {
+        (event_id, artist_id) [unique]
+    }
+}
+
+// ---------------------------------------------------------------------
+// Per-event seating & pricing (facets + manifest)
+// ---------------------------------------------------------------------
+
+Table sections {
+    event_id varchar [not null, note: "one section set per event (manifest is per-event)"]
+    name varchar [not null, note: "manifest -> manifestSections[] -> name (e.g. '319')"]
+
+    seating_type varchar [note: "facets -> facet -> seating ('reserved' | 'general')"]
+    num_seats int [note: "manifest -> manifestSections[] -> numSeats (capacity, sold + open)"]
+
+    created_at timestamp
+    updated_at timestamp
+    last_seen_at timestamp [note: "last scrape run this section appeared in"]
+
+    indexes {
+        (event_id, name) [pk]
+    }
+}
+
+Table seats {
+    event_id varchar [not null]
+    place_id varchar [not null, note: "manifest -> placeIds[] ; JOIN key to facets.places. Unique only within an event"]
+
+    section_name varchar [not null, note: "FK part -> sections.name"]
+    row_name varchar [note: "manifest -> manifestRows[section][] -> name"]
+    seat_number varchar [note: "manifest -> manifestSeats[] (parallel to placeIds)"]
+
+    created_at timestamp
+    updated_at timestamp
+    last_seen_at timestamp [note: "last scrape run this seat appeared in the manifest"]
+
+    indexes {
+        (event_id, place_id) [pk]
+        (event_id, section_name)
+    }
+}
+
+Table offers {
+    event_id varchar [not null]
+    offer_id varchar [not null, note: "facets -> _embedded.offer[] -> offerId (e.g. 'GJ6DC7BXGA')"]
+
+    inventory_type varchar [not null, note: "offer -> inventoryType ('primary' | 'resale')"]
+    offer_type varchar [note: "offer -> offerType ('standard')"]
+
+    name varchar [note: "offer -> name (e.g. 'Verified Buccaneers Ticket'); null for most resale"]
+    description varchar [note: "offer -> description"]
+
+    price_level_id varchar [note: "offer -> priceLevelId (primary only)"]
+    price_level_name varchar [note: "offer -> priceLevelSecname (e.g. 'P23'; primary only)"]
+
+    currency varchar [note: "offer -> currency"]
+    face_value decimal(10,2) [note: "offer -> faceValue"]
+    list_price decimal(10,2) [note: "offer -> listPrice (before fees)"]
+    total_price decimal(10,2) [note: "offer -> totalPrice (incl. fees)"]
+    no_charges_price decimal(10,2) [note: "offer -> noChargesPrice"]
+
+    sellable_quantities varchar [note: "offer -> sellableQuantities[] as CSV/JSON e.g. '1,2,3,4,5,6'"]
+    rank int [note: "offer -> rank"]
+    is_online boolean [note: "offer -> online"]
+    ticket_type_id varchar [note: "offer -> ticketTypeId"]
+
+    listing_id varchar [note: "offer -> listingId (resale only)"]
+    listing_version_id varchar [note: "offer -> listingVersionId (resale only)"]
+    seller_notes varchar [note: "offer -> sellerNotes (resale only)"]
+
+    created_at timestamp
+    updated_at timestamp
+    last_seen_at timestamp [note: "last scrape run this offer was still for sale; if stale -> gone/sold"]
+
+    indexes {
+        (event_id, offer_id) [pk]
+    }
+}
+
+Table seat_offers {
+    event_id varchar [not null]
+    place_id varchar [not null, note: "FK part -> seats.place_id"]
+    offer_id varchar [not null, note: "FK part -> offers.offer_id"]
+
+    is_available boolean [default: true, note: "facets fetched with q=available"]
+    captured_at timestamp [note: "when this availability was scraped"]
+    last_seen_at timestamp [note: "last scrape run this seat was still available; if stale -> sold/removed"]
+
+    indexes {
+        (event_id, place_id) [pk, note: "one active offer per seat; upsert each poll"]
+        (event_id, offer_id)
+    }
+}
+
+// ---------------------------------------------------------------------
+// Relationships
+// ---------------------------------------------------------------------
+
+Ref: events.venue_id > venues.id
+Ref: event_artists.event_id > events.id
+Ref: event_artists.artist_id > artists.name
+
+Ref: sections.event_id > events.id
+Ref: seats.(event_id, section_name) > sections.(event_id, name)
+Ref: offers.event_id > events.id
+Ref: seat_offers.(event_id, place_id) > seats.(event_id, place_id)
+Ref: seat_offers.(event_id, offer_id) > offers.(event_id, offer_id)

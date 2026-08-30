@@ -1,0 +1,33 @@
+# --- Secrets ---
+.env
+*.env
+!.env.example
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# --- Virtualenvs (both the parent and nested venv) ---
+.venv/
+venv/
+env/
+
+# --- Scraper runtime artifacts ---
+tm_scraper/manifests/
+tm_scraper/logs/
+*.log
+
+# --- Large local data dumps (uncomment to keep them out of git) ---
+# another_facet_api.json
+# manifest.json
+# events.json
+# seats.csv
+
+# --- OS / editor ---
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
