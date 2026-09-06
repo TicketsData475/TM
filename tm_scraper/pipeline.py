@@ -50,7 +50,12 @@ async def run():
     _LOG.info("STAGE 2/4  upserting events / venues / artists...")
     venues, event_rows, artists, event_artists = {}, [], {}, []
     skipped = 0
+    partner_skipped = 0
     for ev in events:
+        # only keep Ticketmaster-listed events; partner events aren't our inventory
+        if ev.get("isPartner"):
+            partner_skipped += 1
+            continue
         venue, event, ev_artists, ea = parse.extract_event_entities(ev)
         if event["venue_id"] is None:
             skipped += 1
@@ -62,6 +67,8 @@ async def run():
         for a in ev_artists:
             artists[a["name"]] = a
         event_artists.extend(ea)
+    if partner_skipped:
+        _LOG.info("skipped %d partner events (isPartner=true)", partner_skipped)
     if skipped:
         _LOG.warning("skipped %d events without a venue code", skipped)
 

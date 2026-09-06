@@ -1,0 +1,98 @@
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+  background: #1e3a8a;
+  color: #0f172a;
+  min-height: 100vh;
+}
+
+.page { max-width: 820px; margin: 0 auto; padding: 40px 16px 80px; }
+.title { color: #fff; text-align: center; font-size: 22px; margin: 8px 0 24px; font-weight: 600; }
+
+/* search box */
+.searchWrap { position: relative; }
+.searchInput {
+  width: 100%; padding: 16px 20px; font-size: 16px;
+  border: none; border-radius: 999px; outline: none;
+  box-shadow: 0 6px 20px rgba(0,0,0,.15);
+}
+
+/* autocomplete dropdown */
+.dropdown {
+  position: absolute; left: 0; right: 0; top: calc(100% + 8px);
+  background: #fff; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,.2);
+  overflow: hidden; z-index: 20;
+}
+.dropHead {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 12px 16px; font-size: 12px; color: #64748b; border-bottom: 1px solid #f1f5f9;
+}
+.dropHead a { color: #2563eb; cursor: pointer; font-weight: 600; }
+.rowItem {
+  display: flex; align-items: center; gap: 14px; padding: 12px 16px; cursor: pointer;
+}
+.rowItem:hover { background: #f8fafc; }
+.dateBox {
+  border: 1px solid #e2e8f0; border-radius: 8px; padding: 6px 10px; text-align: center;
+  min-width: 54px; line-height: 1.1;
+}
+.dateBox .m { font-size: 11px; color: #64748b; text-transform: uppercase; }
+.dateBox .d { font-size: 20px; font-weight: 700; }
+.dateBox .y { font-size: 11px; color: #94a3b8; }
+.evTitle { font-weight: 700; font-size: 15px; }
+.evMeta { color: #64748b; font-size: 13px; margin-top: 2px; }
+
+/* results list card */
+.results { background: #fff; border-radius: 14px; margin-top: 16px; padding: 6px 0; }
+.results .rowItem { border-bottom: 1px solid #f1f5f9; }
+.results .rowItem:last-child { border-bottom: none; }
+
+/* detail panel */
+.detail { background: #fff; border-radius: 14px; margin-top: 16px; padding: 20px; }
+.detail h2 { margin: 0 0 4px; font-size: 18px; }
+.detail .sub { color: #64748b; font-size: 13px; margin-bottom: 18px; }
+.back { background: none; border: none; color: #2563eb; cursor: pointer; padding: 0; margin-bottom: 12px; font-size: 13px; }
+.fields { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.field label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+.req { color: #ef4444; }
+
+/* searchable select */
+.select { position: relative; }
+.selectBtn {
+  width: 100%; text-align: left; padding: 10px 12px; border: 1px solid #cbd5e1;
+  border-radius: 8px; background: #fff; cursor: pointer; font-size: 14px; color: #0f172a;
+}
+.selectBtn:disabled { background: #f1f5f9; color: #94a3b8; cursor: not-allowed; }
+.selectMenu {
+  position: absolute; left: 0; right: 0; top: calc(100% + 6px); background: #fff;
+  border: 1px solid #e2e8f0; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,.15);
+  z-index: 30; max-height: 240px; overflow: auto;
+}
+.selectSearch { width: 100%; border: none; border-bottom: 1px solid #f1f5f9; padding: 10px 12px; outline: none; font-size: 14px; }
+.opt { padding: 10px 12px; cursor: pointer; font-size: 14px; }
+.opt:hover { background: #f8fafc; }
+.opt.sel { color: #2563eb; font-weight: 600; }
+.empty { padding: 12px; color: #94a3b8; font-size: 13px; }
+.muted { color: #94a3b8; font-size: 13px; padding: 14px 0; text-align: center; }
+
+/* inventory toggle */
+.toggle { display: flex; border: 1px solid #cbd5e1; border-radius: 8px; overflow: hidden; }
+.toggle button {
+  flex: 1; padding: 10px 8px; border: none; background: #fff; cursor: pointer;
+  font-size: 13px; color: #475569;
+}
+.toggle button.on { background: #1e3a8a; color: #fff; font-weight: 600; }
+.toggle button + button { border-left: 1px solid #cbd5e1; }
+
+/* quote panel */
+.quoteBox {
+  margin-top: 20px; background: #f8fafc; border: 1px solid #e2e8f0;
+  border-radius: 12px; padding: 16px 18px;
+}
+.qRow { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; font-size: 14px; }
+.qRow b { font-size: 15px; }
+.qTotal { border-top: 1px dashed #cbd5e1; margin-top: 6px; padding-top: 12px; }
+.qTotal b { font-size: 20px; color: #1e3a8a; }
+.qNote { color: #64748b; font-size: 12px; margin-top: 10px; }
+.qMsg { color: #475569; font-size: 14px; }
