@@ -46,11 +46,16 @@ def decompress_place_ids(compressed_text):
 # manifest = parallel arrays; expand section/row counts to per-seat identity.
 # --------------------------------------------------------------------------
 def decode_manifest(manifest):
-    """Returns (place_to_seat: {placeId: (section, row, seat)}, sections_info list).
+    """Returns (place_to_seat, sections_info, rows_info).
+
+      place_to_seat : {placeId: (section, row, seat)}
+      sections_info : [{name, num_seats, ga}]
+      rows_info     : [{section_name, row_name, position}]  (reserved sections only)
 
     Only NON-GA (reserved) sections have entries in `manifestRows` and consume
     placeIds/seat numbers; GA sections carry `ga: true`, no rows, and no
-    individual places. `manifestRows` is ordered over the reserved sections only.
+    individual places. `manifestRows` is ordered front->back per section, so the
+    row's index within its section is its physical position.
     Pure-GA / parking events may have no placeIds at all.
     """
     section_list = manifest.get('manifestSections') or []
@@ -60,6 +65,7 @@ def decode_manifest(manifest):
 
     place_to_seat = {}
     sections_info = []
+    rows_info = []
     slot = 0
     row_group_index = 0
     for section in section_list:
@@ -68,8 +74,9 @@ def decode_manifest(manifest):
         sections_info.append({'name': name, 'num_seats': section.get('numSeats'), 'ga': is_ga})
         if is_ga or row_group_index >= len(rows_by_section):
             continue
-        for row in rows_by_section[row_group_index]:
+        for position, row in enumerate(rows_by_section[row_group_index]):
             row_name = row['name']
+            rows_info.append({'section_name': name, 'row_name': row_name, 'position': position})
             for _ in range(row['numSeats']):
                 if slot < len(place_ids):
                     place_to_seat[place_ids[slot]] = (
@@ -78,7 +85,7 @@ def decode_manifest(manifest):
                 slot += 1
         row_group_index += 1
 
-    return place_to_seat, sections_info
+    return place_to_seat, sections_info, rows_info
 
 
 def build_offer_row(event_id, offer_id, offer, fallback_inventory_type):
@@ -107,8 +114,8 @@ def build_offer_row(event_id, offer_id, offer, fallback_inventory_type):
 
 
 def build_seating_rows(event_id, facets_doc, manifest, seat_mode='available'):
-    """Produce sections / seats / offers / seat_offers rows for one event."""
-    place_to_seat, sections_info = decode_manifest(manifest)
+    """Produce sections / section_rows / seats / offers / seat_offers rows for one event."""
+    place_to_seat, sections_info, rows_info = decode_manifest(manifest)
     offers_by_id = {o['offerId']: o for o in facets_doc.get('_embedded', {}).get('offer', [])}
 
     seating_type_by_section = {}
@@ -162,8 +169,16 @@ def build_seating_rows(event_id, facets_doc, manifest, seat_mode='available'):
             for pid, (sec, row, seat) in place_to_seat.items()
         }
 
+    # section_rows: every reserved row with its front->back position (full layout)
+    section_rows = [
+        {'event_id': event_id, 'section_name': r['section_name'],
+         'row_name': r['row_name'], 'position': r['position']}
+        for r in rows_info
+    ]
+
     return {
         'sections': sections_rows,
+        'section_rows': section_rows,
         'seats': list(seats_rows.values()),
         'offers': list(offers_rows.values()),
         'seat_offers': list(seat_offers_rows.values()),

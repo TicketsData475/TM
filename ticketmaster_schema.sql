@@ -95,6 +95,17 @@ CREATE TABLE IF NOT EXISTS "TM"."seats" (
   PRIMARY KEY ("event_id", "place_id")
 );
 
+CREATE TABLE IF NOT EXISTS "TM"."section_rows" (
+  "event_id" varchar NOT NULL,
+  "section_name" varchar NOT NULL,
+  "row_name" varchar NOT NULL,
+  "position" int,
+  "created_at" timestamp,
+  "updated_at" timestamp,
+  "last_seen_at" timestamp,
+  PRIMARY KEY ("event_id", "section_name", "row_name")
+);
+
 CREATE TABLE IF NOT EXISTS "TM"."offers" (
   "event_id" varchar NOT NULL,
   "offer_id" varchar NOT NULL,
@@ -233,6 +244,8 @@ COMMENT ON COLUMN "TM"."seats"."seat_number" IS 'manifest -> manifestSeats[] (pa
 
 COMMENT ON COLUMN "TM"."seats"."last_seen_at" IS 'last scrape run this seat appeared in the manifest';
 
+COMMENT ON COLUMN "TM"."section_rows"."position" IS 'manifest -> manifestRows order (0 = front); physical front->back position of the row within its section';
+
 COMMENT ON COLUMN "TM"."offers"."offer_id" IS 'facets -> _embedded.offer[] -> offerId (e.g. ''GJ6DC7BXGA'')';
 
 COMMENT ON COLUMN "TM"."offers"."inventory_type" IS 'offer -> inventoryType (''primary'' | ''resale'')';
@@ -290,6 +303,8 @@ ALTER TABLE "TM"."event_artists" ADD FOREIGN KEY ("artist_id") REFERENCES "TM"."
 ALTER TABLE "TM"."sections" ADD FOREIGN KEY ("event_id") REFERENCES "TM"."events" ("id") DEFERRABLE INITIALLY IMMEDIATE;
 
 ALTER TABLE "TM"."seats" ADD FOREIGN KEY ("event_id", "section_name") REFERENCES "TM"."sections" ("event_id", "name") DEFERRABLE INITIALLY IMMEDIATE;
+
+ALTER TABLE "TM"."section_rows" ADD FOREIGN KEY ("event_id", "section_name") REFERENCES "TM"."sections" ("event_id", "name") DEFERRABLE INITIALLY IMMEDIATE;
 
 ALTER TABLE "TM"."offers" ADD FOREIGN KEY ("event_id") REFERENCES "TM"."events" ("id") DEFERRABLE INITIALLY IMMEDIATE;
 

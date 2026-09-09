@@ -50,6 +50,11 @@ TABLES = {
         ["section_name", "row_name", "seat_number"],
         True, "created_at",
     ),
+    "section_rows": (
+        ["event_id", "section_name", "row_name"],
+        ["position"],
+        True, "created_at",
+    ),
     "offers": (
         ["event_id", "offer_id"],
         ["inventory_type", "offer_type", "name", "description", "price_level_id",

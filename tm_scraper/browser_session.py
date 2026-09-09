@@ -110,8 +110,12 @@ class TMSession:
         _LOG.info("tmpt refreshed (%s)", "set" if tmpt else "MISSING")
         return tmpt
 
-    async def discover_events(self, max_pages=200):
-        """Page through the search API from inside the browser. Returns event dicts."""
+    async def discover_events(self, max_pages=200, page_delay_ms=1200, attempts=4):
+        """Page through the search API from inside the browser. Returns event dicts.
+
+        Kasada blocks rapid pagination, so we pace requests and, on a block/non-200,
+        reload the page to re-solve the challenge and retry the same page a few
+        times before giving up (returns whatever was collected so far)."""
         import json as _json
 
         events, page_num, total = [], 1, None
@@ -120,11 +124,23 @@ class TMSession:
                 q=config.QUERY, region=config.REGION,
                 start=config.START_DATE, end=config.END_DATE, page=page_num,
             )
-            res = await self._page.evaluate(_SEARCH_FETCH_JS, [api, config.REGION])
-            if res["status"] != 200:
-                raise RuntimeError(f"search page {page_num} -> HTTP {res['status']}: "
-                                   f"{res['body'][:200]}")
-            data = _json.loads(res["body"])
+            data = None
+            for attempt in range(1, attempts + 1):
+                res = await self._page.evaluate(_SEARCH_FETCH_JS, [api, config.REGION])
+                if res["status"] == 200:
+                    data = _json.loads(res["body"])
+                    break
+                _LOG.warning("search page %d attempt %d/%d -> HTTP %s (%s); "
+                             "re-solving Kasada...", page_num, attempt, attempts,
+                             res["status"], (res["body"] or "")[:80])
+                await self._page.reload(wait_until="domcontentloaded", timeout=60000)
+                await self._page.wait_for_timeout(3000 + attempt * 2500)
+
+            if data is None:
+                _LOG.error("giving up on page %d after %d attempts; continuing with "
+                           "%d events collected so far", page_num, attempts, len(events))
+                break
+
             batch = data.get("events", [])
             if not batch:
                 break
@@ -136,5 +152,5 @@ class TMSession:
             if total and len(events) >= total:
                 break
             page_num += 1
-            await self._page.wait_for_timeout(400)
+            await self._page.wait_for_timeout(page_delay_ms)
         return events

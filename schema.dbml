@@ -145,6 +145,21 @@ Table seats {
     }
 }
 
+Table section_rows {
+    event_id varchar [not null]
+    section_name varchar [not null, note: "FK part -> sections.name"]
+    row_name varchar [not null]
+    position int [note: "manifest -> manifestRows order (0 = front); front->back position within the section"]
+
+    created_at timestamp
+    updated_at timestamp
+    last_seen_at timestamp
+
+    indexes {
+        (event_id, section_name, row_name) [pk]
+    }
+}
+
 Table offers {
     event_id varchar [not null]
     offer_id varchar [not null, note: "facets -> _embedded.offer[] -> offerId (e.g. 'GJ6DC7BXGA')"]
@@ -207,6 +222,7 @@ Ref: event_artists.artist_id > artists.name
 
 Ref: sections.event_id > events.id
 Ref: seats.(event_id, section_name) > sections.(event_id, name)
+Ref: section_rows.(event_id, section_name) > sections.(event_id, name)
 Ref: offers.event_id > events.id
 Ref: seat_offers.(event_id, place_id) > seats.(event_id, place_id)
 Ref: seat_offers.(event_id, offer_id) > offers.(event_id, offer_id)

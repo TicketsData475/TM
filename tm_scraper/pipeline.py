@@ -94,7 +94,7 @@ async def run():
 
     limiter = RateLimiter(config.REQ_PER_SEC)
     done = errors_total = 0
-    tally = {"sections": 0, "seats": 0, "offers": 0, "seat_offers": 0}
+    tally = {"sections": 0, "section_rows": 0, "seats": 0, "offers": 0, "seat_offers": 0}
     t_detail = time.monotonic()
 
     for batch_no, chunk in enumerate(_chunk(event_ids, batch_size), 1):
@@ -117,7 +117,7 @@ async def run():
         t_u = time.monotonic()
         for event_id, facets, manifest in results:
             rows = parse.build_seating_rows(event_id, facets, manifest, config.SEAT_MODE)
-            for table in ("sections", "seats", "offers", "seat_offers"):
+            for table in ("sections", "section_rows", "seats", "offers", "seat_offers"):
                 tally[table] += db.upsert(conn, table, rows[table], run_ts)
             conn.commit()
             done += 1
