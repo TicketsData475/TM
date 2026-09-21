@@ -47,7 +47,7 @@ TABLES = {
     ),
     "seats": (
         ["event_id", "place_id"],
-        ["section_name", "row_name", "seat_number"],
+        ["section_name", "row_name", "seat_number", "rank"],
         True, "created_at",
     ),
     "section_rows": (

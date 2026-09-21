@@ -45,6 +45,21 @@ def decompress_place_ids(compressed_text):
 # --------------------------------------------------------------------------
 # manifest = parallel arrays; expand section/row counts to per-seat identity.
 # --------------------------------------------------------------------------
+def decode_seat_ranks(manifest):
+    """{placeId: rank} from manifest.seatRanking (run-length, parallel to placeIds).
+    rank is TM's venue-wide seat-quality rank (1 = best)."""
+    place_ids = manifest.get('placeIds') or []
+    rank_by_place = {}
+    idx = 0
+    for run in manifest.get('seatRanking') or []:
+        rank = run.get('rank')
+        for _ in range(run.get('numSeats', 0)):
+            if idx < len(place_ids):
+                rank_by_place[place_ids[idx]] = rank
+            idx += 1
+    return rank_by_place
+
+
 def decode_manifest(manifest):
     """Returns (place_to_seat, sections_info, rows_info).
 
@@ -116,6 +131,7 @@ def build_offer_row(event_id, offer_id, offer, fallback_inventory_type):
 def build_seating_rows(event_id, facets_doc, manifest, seat_mode='available'):
     """Produce sections / section_rows / seats / offers / seat_offers rows for one event."""
     place_to_seat, sections_info, rows_info = decode_manifest(manifest)
+    rank_by_place = decode_seat_ranks(manifest)
     offers_by_id = {o['offerId']: o for o in facets_doc.get('_embedded', {}).get('offer', [])}
 
     seating_type_by_section = {}
@@ -145,6 +161,7 @@ def build_seating_rows(event_id, facets_doc, manifest, seat_mode='available'):
                 seats_rows.setdefault(place_id, {
                     'event_id': event_id, 'place_id': place_id,
                     'section_name': sec, 'row_name': row, 'seat_number': seat,
+                    'rank': rank_by_place.get(place_id),
                 })
                 seat_offers_rows.setdefault(place_id, {
                     'event_id': event_id, 'place_id': place_id,
@@ -165,7 +182,8 @@ def build_seating_rows(event_id, facets_doc, manifest, seat_mode='available'):
     if seat_mode == 'full':
         seats_rows = {
             pid: {'event_id': event_id, 'place_id': pid,
-                  'section_name': sec, 'row_name': row, 'seat_number': seat}
+                  'section_name': sec, 'row_name': row, 'seat_number': seat,
+                  'rank': rank_by_place.get(pid)}
             for pid, (sec, row, seat) in place_to_seat.items()
         }
 

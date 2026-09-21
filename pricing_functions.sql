@@ -3,21 +3,24 @@
 -- Run once:  psql "$DATABASE_URL" -f pricing_functions.sql
 --
 -- Model (buyback comp), no margin yet:
---   RESALE inventory, total_price (fees included), 10th percentile (P10) = the
---   competitive get-in, robust to greedy outlier listings.
+--   Every seat carries seats.rank = TM's venue-wide seat-quality rank
+--   (manifest seatRanking; 1 = best). Comparable seats = seats of similar
+--   quality, wherever they sit -> this captures "nearby sections + comparable
+--   rows" in one number.
 --
---   Comparable pool (finest available):
---     row given  -> the row's 4-ROW BAND of the section (rows grouped in
---                   consecutive blocks of 4 by physical position)
---     else       -> the whole section
---     GA section -> not priced yet
+--   To price section+row:
+--     1. target_rank = median rank of available seats in that section+row
+--        (falls back to the whole section if the row has none).
+--     2. candidates = available RESALE seats within +/- rank_window (150) of target.
+--     3. restrict to the max_sections sections whose seats are closest in rank
+--        (the "related sections"), for safety.
+--     4. price = P5 of total_price (fees incl.) of that pool.
 --
--- estimate_seat_price(event, section, [row], [inventory_type], [percentile])
--- quote(event, section, [row], quantity, [inventory_type], [percentile])
+-- estimate_seat_price(event, section, [row], [inventory], [pct], [window], [max_sections])
+-- quote(event, section, [row], quantity, [inventory], [pct], [window], [max_sections])
 --
--- basis:  'band' (band col = the row-name range, e.g. 'A-D') | 'section'
---         | 'ga_unsupported' | 'no_data'
--- inventory_type: 'resale' (default) | 'primary' | NULL (=all)
+-- basis: 'rank' | 'ga_unsupported' | 'no_data'
+-- inventory: 'resale' (default) | 'primary' | NULL (=all)
 -- =====================================================================
 
 -- Drop any previous overloads so signature changes never leave ambiguous copies.
@@ -40,118 +43,88 @@ CREATE OR REPLACE FUNCTION "TM".estimate_seat_price(
     p_section        varchar,
     p_row            varchar  DEFAULT NULL,
     p_inventory_type varchar  DEFAULT 'resale',
-    p_percentile     numeric  DEFAULT 0.10
+    p_percentile     numeric  DEFAULT 0.05,
+    p_rank_window    integer  DEFAULT 150,
+    p_max_sections   integer  DEFAULT 7
 )
 RETURNS TABLE (
     basis            text,
-    band             text,
+    target_rank      integer,
     seats_considered integer,
-    price            numeric,   -- p_percentile of total_price (the quote reference)
-    median_price     numeric,   -- 50th percentile of total_price (context)
-    low_price        numeric    -- cheapest available (context)
+    sections_used    integer,
+    related_sections text,
+    price            numeric,
+    median_price     numeric,
+    low_price        numeric
 )
 LANGUAGE plpgsql STABLE
 AS $$
 DECLARE
-    band_size constant integer := 4;   -- rows per band
-    v_is_ga   boolean;
-    v_total   integer;
-    v_pos     integer;
-    v_lo      integer;
-    v_hi      integer;
-    v_band    text;
-    v_first   text;
-    v_last    text;
-    v_count   integer;
+    v_is_ga boolean;
+    v_rank  numeric;
 BEGIN
-    -- GA sections have no per-seat data in this schema yet.
     SELECT (s.seating_type = 'general') INTO v_is_ga
     FROM "TM".sections s
     WHERE s.event_id = p_event_id AND s.name = p_section;
 
     IF v_is_ga THEN
-        RETURN QUERY SELECT 'ga_unsupported'::text, NULL::text, 0,
+        RETURN QUERY SELECT 'ga_unsupported'::text, NULL::int, 0, 0, NULL::text,
                             NULL::numeric, NULL::numeric, NULL::numeric;
         RETURN;
     END IF;
 
-    -- ---- 1) Row given: price the row's 4-row band ----
-    IF p_row IS NOT NULL THEN
-        SELECT count(*) INTO v_total
-        FROM "TM".section_rows sr
-        WHERE sr.event_id = p_event_id AND sr.section_name = p_section;
+    -- 1) target rank: median rank of available seats in the section+row
+    SELECT percentile_disc(0.5) WITHIN GROUP (ORDER BY s.rank) INTO v_rank
+    FROM "TM".seat_offers so
+    JOIN "TM".seats s ON s.event_id = so.event_id AND s.place_id = so.place_id
+    WHERE so.event_id = p_event_id AND so.is_available
+      AND s.section_name = p_section AND s.rank IS NOT NULL
+      AND (p_row IS NULL OR s.row_name = p_row);
 
-        SELECT sr.position INTO v_pos
-        FROM "TM".section_rows sr
-        WHERE sr.event_id = p_event_id AND sr.section_name = p_section
-          AND sr.row_name = p_row;
-
-        IF v_pos IS NOT NULL AND v_total > 0 THEN
-            v_lo := (v_pos / band_size) * band_size;      -- block start (0,4,8,...)
-            v_hi := v_lo + band_size - 1;
-
-            -- label the band by its first..last actual row names
-            SELECT sr.row_name INTO v_first FROM "TM".section_rows sr
-            WHERE sr.event_id = p_event_id AND sr.section_name = p_section
-              AND sr.position = v_lo;
-            SELECT sr.row_name INTO v_last FROM "TM".section_rows sr
-            WHERE sr.event_id = p_event_id AND sr.section_name = p_section
-              AND sr.position = LEAST(v_hi, v_total - 1);
-            v_band := CASE WHEN v_first = v_last THEN v_first ELSE v_first || '-' || v_last END;
-
-            SELECT count(*) INTO v_count
-            FROM "TM".seat_offers so
-            JOIN "TM".seats s
-              ON s.event_id = so.event_id AND s.place_id = so.place_id
-            JOIN "TM".section_rows sr
-              ON sr.event_id = s.event_id AND sr.section_name = s.section_name
-             AND sr.row_name = s.row_name
-            JOIN "TM".offers o
-              ON o.event_id = so.event_id AND o.offer_id = so.offer_id
-            WHERE so.event_id = p_event_id AND s.section_name = p_section
-              AND so.is_available
-              AND (p_inventory_type IS NULL OR o.inventory_type = p_inventory_type)
-              AND sr.position BETWEEN v_lo AND v_hi;
-
-            IF v_count > 0 THEN
-                RETURN QUERY
-                SELECT 'band'::text, v_band, v_count,
-                       round((percentile_cont(p_percentile) WITHIN GROUP (ORDER BY o.total_price))::numeric, 2),
-                       round((percentile_cont(0.5)          WITHIN GROUP (ORDER BY o.total_price))::numeric, 2),
-                       min(o.total_price)
-                FROM "TM".seat_offers so
-                JOIN "TM".seats s
-                  ON s.event_id = so.event_id AND s.place_id = so.place_id
-                JOIN "TM".section_rows sr
-                  ON sr.event_id = s.event_id AND sr.section_name = s.section_name
-                 AND sr.row_name = s.row_name
-                JOIN "TM".offers o
-                  ON o.event_id = so.event_id AND o.offer_id = so.offer_id
-                WHERE so.event_id = p_event_id AND s.section_name = p_section
-                  AND so.is_available
-                  AND (p_inventory_type IS NULL OR o.inventory_type = p_inventory_type)
-                  AND sr.position BETWEEN v_lo AND v_hi;
-                RETURN;
-            END IF;
-            -- band had no available comps -> fall through to whole section
-        END IF;
+    -- fall back to the whole section if that row has no available seats
+    IF v_rank IS NULL AND p_row IS NOT NULL THEN
+        SELECT percentile_disc(0.5) WITHIN GROUP (ORDER BY s.rank) INTO v_rank
+        FROM "TM".seat_offers so
+        JOIN "TM".seats s ON s.event_id = so.event_id AND s.place_id = so.place_id
+        WHERE so.event_id = p_event_id AND so.is_available
+          AND s.section_name = p_section AND s.rank IS NOT NULL;
     END IF;
 
-    -- ---- 2) Whole-section fallback ----
+    IF v_rank IS NULL THEN
+        RETURN QUERY SELECT 'no_data'::text, NULL::int, 0, 0, NULL::text,
+                            NULL::numeric, NULL::numeric, NULL::numeric;
+        RETURN;
+    END IF;
+
+    -- 2-4) comparable pool: similar-rank resale seats, capped to nearest sections
     RETURN QUERY
-    SELECT CASE WHEN count(*) > 0 THEN 'section' ELSE 'no_data' END,
-           NULL::text, count(*)::integer,
-           round((percentile_cont(p_percentile) WITHIN GROUP (ORDER BY o.total_price))::numeric, 2),
-           round((percentile_cont(0.5)          WITHIN GROUP (ORDER BY o.total_price))::numeric, 2),
-           min(o.total_price)
-    FROM "TM".seat_offers so
-    JOIN "TM".seats s
-      ON s.event_id = so.event_id AND s.place_id = so.place_id
-    JOIN "TM".offers o
-      ON o.event_id = so.event_id AND o.offer_id = so.offer_id
-    WHERE so.event_id = p_event_id AND s.section_name = p_section
-      AND so.is_available
-      AND (p_inventory_type IS NULL OR o.inventory_type = p_inventory_type);
+    WITH cand AS (
+        SELECT s.section_name, s.rank, o.total_price
+        FROM "TM".seat_offers so
+        JOIN "TM".seats s ON s.event_id = so.event_id AND s.place_id = so.place_id
+        JOIN "TM".offers o ON o.event_id = so.event_id AND o.offer_id = so.offer_id
+        WHERE so.event_id = p_event_id AND so.is_available
+          AND s.rank IS NOT NULL AND abs(s.rank - v_rank) <= p_rank_window
+          AND (p_inventory_type IS NULL OR o.inventory_type = p_inventory_type)
+    ),
+    s7 AS (
+        SELECT section_name
+        FROM cand
+        GROUP BY section_name
+        ORDER BY min(abs(rank - v_rank))
+        LIMIT p_max_sections
+    ),
+    pool AS (
+        SELECT c.total_price FROM cand c JOIN s7 USING (section_name)
+    )
+    SELECT CASE WHEN (SELECT count(*) FROM pool) > 0 THEN 'rank' ELSE 'no_data' END,
+           v_rank::int,
+           (SELECT count(*)::int FROM pool),
+           (SELECT count(*)::int FROM s7),
+           (SELECT string_agg(section_name, ',' ORDER BY section_name) FROM s7),
+           (SELECT round((percentile_cont(p_percentile) WITHIN GROUP (ORDER BY total_price))::numeric, 2) FROM pool),
+           (SELECT round((percentile_cont(0.5)          WITHIN GROUP (ORDER BY total_price))::numeric, 2) FROM pool),
+           (SELECT min(total_price) FROM pool);
 END;
 $$;
 
@@ -163,21 +136,27 @@ CREATE OR REPLACE FUNCTION "TM".quote(
     p_row            varchar,
     p_quantity       integer,
     p_inventory_type varchar DEFAULT 'resale',
-    p_percentile     numeric DEFAULT 0.10
+    p_percentile     numeric DEFAULT 0.05,
+    p_rank_window    integer DEFAULT 150,
+    p_max_sections   integer DEFAULT 7
 )
 RETURNS TABLE (
     basis            text,
-    band             text,
+    target_rank      integer,
     seats_considered integer,
+    sections_used    integer,
+    related_sections text,
     price_per_seat   numeric,
     quantity         integer,
     subtotal         numeric
 )
 LANGUAGE sql STABLE
 AS $$
-    SELECT e.basis, e.band, e.seats_considered,
+    SELECT e.basis, e.target_rank, e.seats_considered, e.sections_used,
+           e.related_sections,
            e.price      AS price_per_seat,
            p_quantity   AS quantity,
            round(e.price * p_quantity, 2) AS subtotal
-    FROM "TM".estimate_seat_price(p_event_id, p_section, p_row, p_inventory_type, p_percentile) e;
+    FROM "TM".estimate_seat_price(p_event_id, p_section, p_row, p_inventory_type,
+                                  p_percentile, p_rank_window, p_max_sections) e;
 $$;

@@ -134,6 +134,7 @@ Table seats {
     section_name varchar [not null, note: "FK part -> sections.name"]
     row_name varchar [note: "manifest -> manifestRows[section][] -> name"]
     seat_number varchar [note: "manifest -> manifestSeats[] (parallel to placeIds)"]
+    rank int [note: "manifest -> seatRanking (venue-wide seat quality; 1 = best); pools comparable seats across sections"]
 
     created_at timestamp
     updated_at timestamp

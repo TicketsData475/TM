@@ -179,12 +179,6 @@ export default function Home() {
     setQuantity("1"); setQuote(null);
   }
 
-  function quoteBasisLabel(q) {
-    if (!q) return null;
-    if (q.basis === "band") return `rows ${q.band} of section ${section}`;
-    if (q.basis === "section") return `section ${section}` + (row ? " (row not priced separately)" : "");
-    return null;
-  }
 
   return (
     <div className="page">
@@ -280,7 +274,7 @@ export default function Home() {
               ) : (
                 <>
                   <div className="qRow">
-                    <span>Market price / seat <small style={{ color: "#94a3b8" }}>(P10, incl. fees)</small></span>
+                    <span>Market price / seat <small style={{ color: "#94a3b8" }}>(P5, incl. fees)</small></span>
                     <b>{money(quote.price_per_seat)}</b>
                   </div>
                   <div className="qRow qTotal">
@@ -288,7 +282,9 @@ export default function Home() {
                     <b>{money(quote.subtotal)}</b>
                   </div>
                   <div className="qNote">
-                    Based on {quote.seats_considered} {inventory === "resale" ? "resale" : "available"} seat(s) in {quoteBasisLabel(quote)}.
+                    Based on {quote.seats_considered} comparable {inventory === "resale" ? "resale" : "available"} seat(s)
+                    of similar quality across {quote.sections_used} section(s)
+                    {quote.related_sections ? ` (${quote.related_sections})` : ""}.
                   </div>
                 </>
               )}

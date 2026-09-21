@@ -89,6 +89,7 @@ CREATE TABLE IF NOT EXISTS "TM"."seats" (
   "section_name" varchar NOT NULL,
   "row_name" varchar,
   "seat_number" varchar,
+  "rank" int,
   "created_at" timestamp,
   "updated_at" timestamp,
   "last_seen_at" timestamp,
@@ -241,6 +242,8 @@ COMMENT ON COLUMN "TM"."seats"."section_name" IS 'FK part -> sections.name';
 COMMENT ON COLUMN "TM"."seats"."row_name" IS 'manifest -> manifestRows[section][] -> name';
 
 COMMENT ON COLUMN "TM"."seats"."seat_number" IS 'manifest -> manifestSeats[] (parallel to placeIds)';
+
+COMMENT ON COLUMN "TM"."seats"."rank" IS 'manifest -> seatRanking (venue-wide seat quality; 1 = best). Used to pool comparable seats across sections.';
 
 COMMENT ON COLUMN "TM"."seats"."last_seen_at" IS 'last scrape run this seat appeared in the manifest';
 
