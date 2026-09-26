@@ -47,7 +47,7 @@ class ProxyDB:
         if missing:
             raise RuntimeError(f"Proxies DB not configured: missing {missing}")
         self._pool = ThreadedConnectionPool(
-            1, max(2, config.CONCURRENCY) + 2,
+            1, 4,   # small: one browser claims/releases one proxy at a time
             host=config.PROXIES_DB_HOST, port=config.PROXIES_DB_PORT,
             dbname=config.PROXIES_DB_NAME, user=config.PROXIES_DB_USER,
             password=config.PROXIES_DB_PASSWORD,

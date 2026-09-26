@@ -8,6 +8,8 @@ patchright + real Chrome + a persistent profile is what gets past Kasada's
 "your browser activity has been paused" screen that plain Playwright triggers.
 """
 import asyncio
+import json
+import os
 import shutil
 import tempfile
 import time
@@ -19,6 +21,10 @@ from proxies import ProxyNotAvailable, proxy_for_playwright
 from proxies.factory import get_proxy_provider
 
 _LOG = log.get("browser")
+
+
+class ProxyBlocked(Exception):
+    """Kasada paused the page / withheld data on the current exit IP -> rotate."""
 
 _SEARCH_FETCH_JS = """
 async ([url, region]) => {
@@ -268,6 +274,157 @@ class TMSession:
         self._c_tmpt = tmpt
         self._cookie = await self.get_cookie_header()
         return tmpt
+
+    # ------------------------------------------------------------------ #
+    #  Per-event seating detail, fetched THROUGH the trusted browser.      #
+    #  curl can't get facets/manifest anymore (Kasada signs each request), #
+    #  so we load the event's seat map and read the app's own responses.   #
+    # ------------------------------------------------------------------ #
+    async def _safe_content(self):
+        try:
+            return (await self._page.content()).lower()
+        except Exception:  # noqa: BLE001 - page mid-navigation
+            return ""
+
+    async def _accept_cookie_popup(self):
+        """Dismiss the OneTrust consent popup that otherwise blocks the seat map."""
+        for sel in ("#onetrust-accept-btn-handler",
+                    'button:has-text("Accept All")', 'button:has-text("Accept")'):
+            try:
+                el = self._page.locator(sel).first
+                if await el.count():
+                    await el.click(timeout=2500)
+                    return True
+            except Exception:  # noqa: BLE001
+                continue
+        return False
+
+    async def _open_seatmap(self):
+        """Click into the seat-selection view so the app fetches show=places +
+        embed=offer. Returns True if a CTA was clicked."""
+        for sel in ('a:has-text("Find Tickets")', 'button:has-text("Find Tickets")',
+                    'button:has-text("Select Your Own Seats")',
+                    'a:has-text("Get Tickets")', 'button:has-text("Buy")'):
+            try:
+                el = self._page.locator(sel).first
+                if await el.count():
+                    await el.click(timeout=3000)
+                    return True
+            except Exception:  # noqa: BLE001
+                continue
+        return False
+
+    async def _manifest_in_page(self, event_id):
+        """Manifest (seat rank + row/seat labels). Public pubapi, but Kasada-walled
+        to curl now -> fetch it in-page (works; it sends Access-Control-Allow-Origin).
+        Cached on disk since the seat layout/ranks are static."""
+        path = os.path.join(config.MANIFEST_CACHE_DIR, f"{event_id}.json")
+        if not config.REFRESH_MANIFEST and os.path.exists(path):
+            with open(path) as fh:
+                return json.load(fh)
+        r = await self.page_fetch(config.MANIFEST_URL.format(event_id=event_id))
+        if r["status"] != 200:
+            raise ProxyBlocked(f"manifest {event_id} -> HTTP {r['status']}")
+        data = json.loads(r["body"])
+        os.makedirs(config.MANIFEST_CACHE_DIR, exist_ok=True)
+        with open(path, "w") as fh:
+            json.dump(data, fh)
+        return data
+
+    async def fetch_event(self, event_url, event_id, timeout_s=45):
+        """Load an event's seat map and return (facets_doc, manifest) ready for the
+        parser. Raises ProxyBlocked if Kasada won't clear on this IP.
+
+        Two ways to get the seat-level facets, tried in order:
+          A. in-page fetch of the rich services query (places + embedded offers) --
+             one call, no UI interaction, if services allows the fetch;
+          B. intercept the app's own calls: the show=places doc + the embed=offer
+             doc, then merge (offers carry the prices the places doc lacks).
+        """
+        # Keep the RICHEST of each: the app fires several facets calls; the one we
+        # want for places groups by section (facets with both 'section' and 'places'),
+        # not the smaller by-shape variants; the one for prices embeds priced offers.
+        captured = {"places": None, "places_n": 0, "offers": None, "offers_n": 0}
+
+        async def on_response(resp):
+            u = resp.url
+            if "ismds" not in u or "facets" not in u:
+                return
+            try:
+                data = await resp.json()
+            except Exception:  # noqa: BLE001
+                return
+            facets = data.get("facets") or []
+            placish = sum(1 for f in facets if f.get("places") and f.get("section"))
+            if placish > captured["places_n"]:
+                captured["places"], captured["places_n"] = data, placish
+            offers = (data.get("_embedded") or {}).get("offer") or []
+            priced = sum(1 for o in offers if o.get("listPrice") is not None)
+            if priced > captured["offers_n"]:
+                captured["offers"], captured["offers_n"] = data, priced
+
+        self._page.on("response", on_response)
+        try:
+            await self.goto_retry(event_url)
+            accepted = clicked = ever_cleared = False
+            deadline = time.monotonic() + timeout_s
+            while time.monotonic() < deadline:
+                await self._page.wait_for_timeout(3000)
+                content = await self._safe_content()
+                if not content or "activity has been paused" in content \
+                        or "browsing activity" in content:
+                    continue                       # still on Kasada's interstitial
+                ever_cleared = True
+                if not accepted:
+                    accepted = await self._accept_cookie_popup()
+                if not clicked:
+                    clicked = await self._open_seatmap()   # fire show=places + embed=offer
+                try:
+                    await self._page.mouse.wheel(0, 900)   # nudge the map to render
+                except Exception:  # noqa: BLE001
+                    pass
+                if captured["places"] and captured["offers"]:
+                    break
+
+            # primary: the app's own intercepted calls (proven to carry full data)
+            if captured["places"] and captured["offers"]:
+                facets_doc = self._ensure_offer_prices(captured["places"], captured)
+                return facets_doc, await self._manifest_in_page(event_id)
+
+            # fallback: our own rich fetch on services (if that host allows it)
+            if ever_cleared:
+                rich_url = config.FACETS_URL.format(
+                    event_id=event_id, channel=config.RESALE_CHANNEL,
+                    apikey=config.APIKEY, apisecret=config.APISECRET)
+                r = await self.page_fetch(rich_url)
+                if r["status"] == 200:
+                    try:
+                        doc = json.loads(r["body"])
+                    except Exception:  # noqa: BLE001
+                        doc = {}
+                    if any(f.get("places") and f.get("section") for f in doc.get("facets", [])):
+                        return (self._ensure_offer_prices(doc, captured),
+                                await self._manifest_in_page(event_id))
+
+            if not ever_cleared:
+                raise ProxyBlocked(f"event {event_id}: Kasada paused (IP flagged)")
+            raise ProxyBlocked(
+                f"event {event_id}: facets incomplete "
+                f"(places={bool(captured['places'])}, offers={bool(captured['offers'])})")
+        finally:
+            try:
+                self._page.remove_listener("response", on_response)
+            except Exception:  # noqa: BLE001
+                pass
+
+    def _ensure_offer_prices(self, places_doc, captured):
+        """Make sure the doc's _embedded.offer carries prices (merge the intercepted
+        offer map in if the places doc didn't embed them)."""
+        emb = places_doc.setdefault("_embedded", {})
+        have = [o for o in (emb.get("offer") or []) if o.get("listPrice") is not None]
+        if not have and captured.get("offers"):
+            emb["offer"] = captured["offers"]["_embedded"]["offer"]
+        return places_doc
 
     async def discover_events(self, max_pages=200, page_delay_ms=1200, attempts=4):
         """Page through the search API from inside the browser. Returns event dicts.

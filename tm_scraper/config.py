@@ -35,10 +35,11 @@ END_DATE = _env("TM_END_DATE") or (date.today() + timedelta(days=180)).isoformat
 
 # --- Behaviour ---
 SEAT_MODE = _env("SEAT_MODE", "available").lower()           # 'available' | 'full'
-CONCURRENCY = int(_env("CONCURRENCY", "5"))                   # simultaneous facets fetches
-REQ_PER_SEC = float(_env("REQ_PER_SEC", "5"))                 # global facets rate cap
 MAX_EVENTS = int(_env("MAX_EVENTS")) if _env("MAX_EVENTS") else None  # debug cap
-HEADLESS = _env("HEADLESS", "true").lower() != "false"
+# Promo/non-seatmap listings (titles containing these) have no seat map -> no
+# facets. Skipped in the detail stage to avoid wasting ~3 min each on failures.
+SKIP_TITLE_KEYWORDS = ("HALF PRICE", "PARKING", "HOSPITALITY", "PACKAGE")
+HEADLESS = _env("HEADLESS", "false").lower() != "false"   # Kasada blocks headless
 REFRESH_MANIFEST = _env("REFRESH_MANIFEST", "false").lower() == "true"
 # Browser channel for the stealth (patchright) session. "chrome" drives real
 # Google Chrome (best against Kasada); set to "" to use patchright's bundled
