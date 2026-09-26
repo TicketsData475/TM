@@ -5,10 +5,16 @@ Semantics per row on every scrape:
   - last_seen_at : bumped to run_ts on every upsert (row was present this run).
   - updated_at   : bumped to run_ts ONLY when a business column actually changed.
 """
+import io
+
 import psycopg2
 from psycopg2.extras import execute_values
 
 from config import dsn, DB_SCHEMA
+
+# Big per-event tables use COPY-into-staging + INSERT...SELECT...ON CONFLICT
+# (much faster than row-by-row execute_values over a remote connection).
+COPY_TABLES = {"seats", "seat_offers", "section_rows"}
 
 # table -> (pk columns, business columns, has_updated_at, created_col)
 #   created_col = the "set once, never overwrite" timestamp column for this table
@@ -106,10 +112,77 @@ def build_upsert_sql(table):
     ), insert_cols, business
 
 
+def encode_for_copy(value):
+    r"""Encode one value for text-format COPY: NULL=\N, booleans t/f, escapes."""
+    if value is None:
+        return r"\N"
+    if value is True:
+        return "t"
+    if value is False:
+        return "f"
+    return (str(value).replace("\\", "\\\\").replace("\t", "\\t")
+            .replace("\n", "\\n").replace("\r", "\\r"))
+
+
+def bulk_upsert_via_copy(conn, table, rows, run_ts):
+    """COPY rows into a temp staging table, then one INSERT...SELECT...ON CONFLICT.
+    Same last_seen_at / updated_at semantics as the execute_values path."""
+    primary_key_cols, business_cols, has_updated_at, created_col = TABLES[table]
+    target_table = f"{_q(DB_SCHEMA)}.{_q(table)}"
+    staging_table = f"_stg_{table}"
+    streamed_cols = primary_key_cols + business_cols        # columns we COPY in
+    streamed_col_sql = ", ".join(_q(c) for c in streamed_cols)
+    conflict_col_sql = ", ".join(_q(c) for c in primary_key_cols)
+
+    # stream the rows as a tab-delimited text buffer
+    copy_buffer = io.StringIO()
+    for row in rows:
+        copy_buffer.write("\t".join(encode_for_copy(row.get(c)) for c in streamed_cols))
+        copy_buffer.write("\n")
+    copy_buffer.seek(0)
+
+    insert_cols = primary_key_cols + business_cols + [created_col, "last_seen_at"]
+    if has_updated_at:
+        insert_cols.append("updated_at")
+    insert_col_sql = ", ".join(_q(c) for c in insert_cols)
+    # de-dupe within the batch with DISTINCT ON (pk); timestamps come from run_ts
+    select_col_sql = ", ".join(
+        [f"stg.{_q(c)}" for c in streamed_cols]
+        + ["%(run_ts)s", "%(run_ts)s"] + (["%(run_ts)s"] if has_updated_at else [])
+    )
+
+    set_clauses = [f"{_q(c)} = EXCLUDED.{_q(c)}" for c in business_cols]
+    set_clauses.append(f'{_q("last_seen_at")} = EXCLUDED.{_q("last_seen_at")}')
+    if has_updated_at and business_cols:
+        existing_vals = ", ".join(f"{target_table}.{_q(c)}" for c in business_cols)
+        incoming_vals = ", ".join(f"EXCLUDED.{_q(c)}" for c in business_cols)
+        set_clauses.append(
+            f'{_q("updated_at")} = CASE WHEN ({existing_vals}) IS DISTINCT FROM ({incoming_vals}) '
+            f'THEN EXCLUDED.{_q("updated_at")} ELSE {target_table}.{_q("updated_at")} END'
+        )
+
+    with conn.cursor() as cur:
+        cur.execute(f'DROP TABLE IF EXISTS "{staging_table}"')
+        cur.execute(f'CREATE TEMP TABLE "{staging_table}" ON COMMIT DROP AS '
+                    f"SELECT {streamed_col_sql} FROM {target_table} WITH NO DATA")
+        cur.copy_expert(f'COPY "{staging_table}" ({streamed_col_sql}) FROM STDIN', copy_buffer)
+        cur.execute(
+            f"INSERT INTO {target_table} ({insert_col_sql}) "
+            f"SELECT {select_col_sql} FROM "
+            f"(SELECT DISTINCT ON ({conflict_col_sql}) {streamed_col_sql} "
+            f'FROM "{staging_table}" ORDER BY {conflict_col_sql}) stg '
+            f"ON CONFLICT ({conflict_col_sql}) DO UPDATE SET {', '.join(set_clauses)}",
+            {"run_ts": run_ts},
+        )
+    return len(rows)
+
+
 def upsert(conn, table, rows, run_ts):
     """Bulk upsert row-dicts into a TM table. Dedupes on PK within the batch."""
     if not rows:
         return 0
+    if table in COPY_TABLES:
+        return bulk_upsert_via_copy(conn, table, rows, run_ts)
     pk, business, has_updated, created_col = TABLES[table]
     sql, insert_cols, _ = build_upsert_sql(table)
 

@@ -11,10 +11,10 @@
 --   To price section+row:
 --     1. target_rank = median rank of available seats in that section+row
 --        (falls back to the whole section if the row has none).
---     2. candidates = available RESALE seats within +/- rank_window (150) of target.
+--     2. candidates = available RESALE seats within +/- rank_window (200) of target.
 --     3. restrict to the max_sections sections whose seats are closest in rank
 --        (the "related sections"), for safety.
---     4. price = P5 of total_price (fees incl.) of that pool.
+--     4. price = P0 (lowest) of list_price (before fees; = face value) of that pool.
 --
 -- estimate_seat_price(event, section, [row], [inventory], [pct], [window], [max_sections])
 -- quote(event, section, [row], quantity, [inventory], [pct], [window], [max_sections])
@@ -43,8 +43,8 @@ CREATE OR REPLACE FUNCTION "TM".estimate_seat_price(
     p_section        varchar,
     p_row            varchar  DEFAULT NULL,
     p_inventory_type varchar  DEFAULT 'resale',
-    p_percentile     numeric  DEFAULT 0.05,
-    p_rank_window    integer  DEFAULT 150,
+    p_percentile     numeric  DEFAULT 0,
+    p_rank_window    integer  DEFAULT 200,
     p_max_sections   integer  DEFAULT 7
 )
 RETURNS TABLE (
@@ -99,7 +99,7 @@ BEGIN
     -- 2-4) comparable pool: similar-rank resale seats, capped to nearest sections
     RETURN QUERY
     WITH cand AS (
-        SELECT s.section_name, s.rank, o.total_price
+        SELECT s.section_name, s.rank, o.list_price
         FROM "TM".seat_offers so
         JOIN "TM".seats s ON s.event_id = so.event_id AND s.place_id = so.place_id
         JOIN "TM".offers o ON o.event_id = so.event_id AND o.offer_id = so.offer_id
@@ -115,16 +115,16 @@ BEGIN
         LIMIT p_max_sections
     ),
     pool AS (
-        SELECT c.total_price FROM cand c JOIN s7 USING (section_name)
+        SELECT c.list_price FROM cand c JOIN s7 USING (section_name)
     )
     SELECT CASE WHEN (SELECT count(*) FROM pool) > 0 THEN 'rank' ELSE 'no_data' END,
            v_rank::int,
            (SELECT count(*)::int FROM pool),
            (SELECT count(*)::int FROM s7),
            (SELECT string_agg(section_name, ',' ORDER BY section_name) FROM s7),
-           (SELECT round((percentile_cont(p_percentile) WITHIN GROUP (ORDER BY total_price))::numeric, 2) FROM pool),
-           (SELECT round((percentile_cont(0.5)          WITHIN GROUP (ORDER BY total_price))::numeric, 2) FROM pool),
-           (SELECT min(total_price) FROM pool);
+           (SELECT round((percentile_cont(p_percentile) WITHIN GROUP (ORDER BY list_price))::numeric, 2) FROM pool),
+           (SELECT round((percentile_cont(0.5)          WITHIN GROUP (ORDER BY list_price))::numeric, 2) FROM pool),
+           (SELECT min(list_price) FROM pool);
 END;
 $$;
 
@@ -136,8 +136,8 @@ CREATE OR REPLACE FUNCTION "TM".quote(
     p_row            varchar,
     p_quantity       integer,
     p_inventory_type varchar DEFAULT 'resale',
-    p_percentile     numeric DEFAULT 0.05,
-    p_rank_window    integer DEFAULT 150,
+    p_percentile     numeric DEFAULT 0,
+    p_rank_window    integer DEFAULT 200,
     p_max_sections   integer DEFAULT 7
 )
 RETURNS TABLE (

@@ -274,7 +274,7 @@ export default function Home() {
               ) : (
                 <>
                   <div className="qRow">
-                    <span>Market price / seat <small style={{ color: "#94a3b8" }}>(P5, incl. fees)</small></span>
+                    <span>Market price / seat <small style={{ color: "#94a3b8" }}>(lowest, list price)</small></span>
                     <b>{money(quote.price_per_seat)}</b>
                   </div>
                   <div className="qRow qTotal">
