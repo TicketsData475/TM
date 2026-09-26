@@ -1,4 +1,6 @@
-playwright==1.47.0
+# patchright = stealth-patched Playwright (drives real Chrome past Kasada).
+# Install browsers with: patchright install chromium  (chrome channel uses system Chrome)
+patchright>=1.52.0
 curl_cffi>=0.7.0
 psycopg2-binary>=2.9.9
 python-dotenv>=1.0.1

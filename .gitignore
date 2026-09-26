@@ -23,6 +23,7 @@ env/
 # --- Scraper runtime artifacts ---
 tm_scraper/manifests/
 tm_scraper/logs/
+tm_scraper/dumps/
 *.log
 
 # --- Large local data dumps (uncomment to keep them out of git) ---
@@ -37,3 +38,4 @@ Thumbs.db
 .idea/
 .vscode/
 *.swp
+

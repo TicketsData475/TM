@@ -40,6 +40,43 @@ REQ_PER_SEC = float(_env("REQ_PER_SEC", "5"))                 # global facets ra
 MAX_EVENTS = int(_env("MAX_EVENTS")) if _env("MAX_EVENTS") else None  # debug cap
 HEADLESS = _env("HEADLESS", "true").lower() != "false"
 REFRESH_MANIFEST = _env("REFRESH_MANIFEST", "false").lower() == "true"
+# Browser channel for the stealth (patchright) session. "chrome" drives real
+# Google Chrome (best against Kasada); set to "" to use patchright's bundled
+# Chromium instead. Kasada reliably blocks non-stealth browsers, so we always
+# run patchright, but real Chrome is the most human-looking.
+BROWSER_CHANNEL = _env("BROWSER_CHANNEL", "chrome")
+
+# --- Proxies (same system as axs-scraper-2) ---
+# Enable with PROXY_ENABLED=true. Source resolution order (first that applies):
+#   1. Proxies DB by id  (PROXIES_DB_* + PROXY_DB_IDS)  -- preferred, like axs
+#   2. single proxy      (PROXY_HOST/PORT/USERNAME/PASSWORD)
+# Usernames may contain ${random_alphanumeric_10} etc. (expanded per request).
+PROXY_ENABLED = _env("PROXY_ENABLED", "false").lower() == "true"
+
+# 1) Proxies DB (separate infra Postgres holding the shared `proxies` table)
+PROXIES_DB_HOST = _env("PROXIES_DB_HOST")
+PROXIES_DB_PORT = int(_env("PROXIES_DB_PORT", "5432"))
+PROXIES_DB_NAME = _env("PROXIES_DB_NAME")
+PROXIES_DB_USER = _env("PROXIES_DB_USER")
+PROXIES_DB_PASSWORD = _env("PROXIES_DB_PASSWORD")
+PROXY_DB_IDS = [int(x) for x in (_env("PROXY_DB_IDS", "") or "").replace(",", " ").split() if x.strip().isdigit()]
+PROXY_DB_CLAIM_MODE = _env("PROXY_DB_CLAIM_MODE", "true").lower() == "true"  # claim/release vs static round-robin
+PROXY_DB_STALE_MINUTES = int(_env("PROXY_DB_STALE_MINUTES", "10"))
+# One sticky proxy is reused across events; on a 403 we rotate to a new proxy and
+# retry the same event, up to this many times. If still blocked, we then renew
+# the tmpt token (browser reload) and retry, up to TOKEN_MAX_RENEWS times.
+PROXY_MAX_ROTATIONS = int(_env("PROXY_MAX_ROTATIONS", "1"))
+TOKEN_MAX_RENEWS = int(_env("TOKEN_MAX_RENEWS", "1"))
+# Each proxy id is a self-rotating endpoint: hitting its refresh_url swaps the
+# exit IP. Seconds to wait after a rotate_ip call for the new IP to take effect.
+PROXY_ROTATE_WAIT = int(_env("PROXY_ROTATE_WAIT", "13"))
+
+# 2) single proxy
+PROXY_TYPE = _env("PROXY_TYPE", "http")
+PROXY_HOST = _env("PROXY_HOST")
+PROXY_PORT = int(_env("PROXY_PORT", "0")) or None
+PROXY_USERNAME = _env("PROXY_USERNAME")
+PROXY_PASSWORD = _env("PROXY_PASSWORD")
 
 # --- Logging ---
 LOG_LEVEL = _env("LOG_LEVEL", "INFO")

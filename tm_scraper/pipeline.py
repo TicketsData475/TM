@@ -8,7 +8,7 @@ import db
 import log
 import parse
 from browser_session import TMSession
-from event_details import fetch_batch, RateLimiter
+from event_details import fetch_batch, RateLimiter, Rotator
 
 _LOG = log.get("pipeline")
 
@@ -45,6 +45,9 @@ async def run():
     _LOG.info("tmpt token: %s | forwarding %d browser cookies",
               "captured" if c_tmpt else "MISSING (facets may fail)",
               cookie_header.count("=") if cookie_header else 0)
+
+    # the browser owns the shared proxy + token; the fetcher rotates via it
+    rotator = Rotator(session)
 
     # ---- 2. upsert event/venue/artist entities ----
     _LOG.info("STAGE 2/4  upserting events / venues / artists...")
@@ -101,16 +104,8 @@ async def run():
         _LOG.info("batch %d/%d: fetching %d events...",
                   batch_no, (total + batch_size - 1) // batch_size, len(chunk))
         t_f = time.monotonic()
-        results, needs_refresh, errors = await fetch_batch(
-            chunk, c_tmpt, cookie_header, limiter=limiter)
-        if needs_refresh:
-            c_tmpt = await session.refresh()
-            cookie_header = await session.get_cookie_header()
-            retry, _, retry_errors = await fetch_batch(
-                chunk, c_tmpt, cookie_header, limiter=limiter)
-            seen = {r[0] for r in results}
-            results.extend(r for r in retry if r[0] not in seen)
-            errors = retry_errors
+        # proxy + token rotation (on 403) is handled inside fetch_one
+        results, errors = await fetch_batch(chunk, rotator, limiter=limiter)
         errors_total += errors
         t_fetch = time.monotonic() - t_f
 
@@ -138,7 +133,7 @@ async def run():
               log.fmt_secs(time.monotonic() - t_detail), done, errors_total,
               tally["sections"], tally["seats"], tally["offers"], tally["seat_offers"])
 
-    await session.close()
+    await session.close()   # releases the shared proxy
 
     # ---- 4. freshness sweep: seats no longer for sale -> unavailable ----
     _LOG.info("STAGE 4/4  sweeping stale availability...")
