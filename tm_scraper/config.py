@@ -36,6 +36,21 @@ END_DATE = _env("TM_END_DATE") or (date.today() + timedelta(days=180)).isoformat
 # --- Behaviour ---
 SEAT_MODE = _env("SEAT_MODE", "available").lower()           # 'available' | 'full'
 MAX_EVENTS = int(_env("MAX_EVENTS")) if _env("MAX_EVENTS") else None  # debug cap
+CONCURRENCY = int(_env("CONCURRENCY", "3"))                   # simultaneous curl fetches (per instance)
+REQ_PER_SEC = float(_env("REQ_PER_SEC", "12"))               # curl rate cap (per instance)
+# After solving Kasada, fire this many in-page search fetches to upgrade the
+# session cookie to a state curl can reuse (a bare page load isn't enough).
+WARMUP_ROUNDS = int(_env("WARMUP_ROUNDS", "6"))
+
+# --- Detail worker / queue ---
+# Scale horizontally by running more worker INSTANCES (processes/machines), each
+# = one browser + one proxy. They share the TM.detail_queue via SKIP LOCKED.
+import socket as _socket
+WORKER_ID = _env("WORKER_ID") or f"{_socket.gethostname()}-{os.getpid()}"
+CLAIM_BATCH = int(_env("CLAIM_BATCH", "20"))          # events leased per claim
+LEASE_MINUTES = int(_env("LEASE_MINUTES", "15"))      # a lease older than this = crashed worker
+MAX_ATTEMPTS = int(_env("MAX_ATTEMPTS", "3"))         # hard failures before -> 'failed'
+WORKER_IDLE_SLEEP = int(_env("WORKER_IDLE_SLEEP", "0"))  # queue-empty wait; 0 = exit when drained
 # Promo/non-seatmap listings (titles containing these) have no seat map -> no
 # facets. Skipped in the detail stage to avoid wasting ~3 min each on failures.
 SKIP_TITLE_KEYWORDS = ("HALF PRICE", "PARKING", "HOSPITALITY", "PACKAGE")
@@ -69,8 +84,10 @@ PROXY_DB_STALE_MINUTES = int(_env("PROXY_DB_STALE_MINUTES", "10"))
 PROXY_MAX_ROTATIONS = int(_env("PROXY_MAX_ROTATIONS", "1"))
 TOKEN_MAX_RENEWS = int(_env("TOKEN_MAX_RENEWS", "1"))
 # Each proxy id is a self-rotating endpoint: hitting its refresh_url swaps the
-# exit IP. Seconds to wait after a rotate_ip call for the new IP to take effect.
+# exit IP. Seconds to wait after a rotate_ip call for the new IP to take effect,
+# and (longer) when the id is on cooldown (HTTP 422 = rotated too recently).
 PROXY_ROTATE_WAIT = int(_env("PROXY_ROTATE_WAIT", "13"))
+PROXY_COOLDOWN_WAIT = int(_env("PROXY_COOLDOWN_WAIT", "60"))
 
 # 2) single proxy
 PROXY_TYPE = _env("PROXY_TYPE", "http")
@@ -99,12 +116,23 @@ SEARCH_API_URL = (
     "https://www.ticketmaster.com/api/search/events"
     "?q={q}&region={region}&startDate={start}&endDate={end}&sort=date&page={page}"
 )
-FACETS_URL = (
+# Seat-level inventory comes from TWO of the app's own facets calls, merged:
+#   PLACES  (services)     -> which seats are available, per section, + their offerId
+#   OFFERS  (offeradapter) -> each offer's list/face/total price
+# Fetched by curl using the browser's Kasada-solved cookies on the same proxy IP.
+# NOTE: PLACES must NOT include embed=offer (that 400s on services); prices come
+# from the separate OFFERS call and get merged into PLACES._embedded.offer.
+PLACES_URL = (
     "https://services.ticketmaster.com/api/ismds/event/{event_id}/facets"
     "?by=section+seating+attributes+available+accessibility+offer+placeGroups"
     "+inventoryType+offerType+area+description"
-    "&show=places&embed=area&embed=description&embed=offer&q=available"
+    "&show=places&embed=area&embed=description&q=available"
     "&compress=places&resaleChannelId={channel}&apikey={apikey}&apisecret={apisecret}"
+)
+OFFERS_URL = (
+    "https://offeradapter.ticketmaster.com/api/ismds/event/{event_id}/facets"
+    "?apikey={apikey}&apisecret={apisecret}&by=inventorytypes+offer&q=available"
+    "&show=listpricerange&embed=offer&resaleChannelId={channel}"
 )
 MANIFEST_URL = "https://pubapi.ticketmaster.com/sdk/static/manifest/v1/{event_id}"
 

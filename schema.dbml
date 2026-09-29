@@ -213,6 +213,23 @@ Table seat_offers {
     }
 }
 
+// Detail work queue: discovery enqueues events; detail workers claim + scrape.
+// Resume-on-crash via lease timeout; horizontal scale via FOR UPDATE SKIP LOCKED.
+Table detail_queue {
+  event_id varchar [pk]
+  status varchar [not null, default: 'pending', note: 'pending | leased | done | failed']
+  leased_at timestamptz
+  leased_by varchar
+  attempts integer [not null, default: 0]
+  last_detail_at timestamptz [note: 'last successful detail scrape']
+  enqueued_at timestamptz
+  updated_at timestamptz
+
+  Indexes {
+    (status, last_detail_at) [name: 'idx_detail_queue_claim']
+  }
+}
+
 // ---------------------------------------------------------------------
 // Relationships
 // ---------------------------------------------------------------------
@@ -227,3 +244,4 @@ Ref: section_rows.(event_id, section_name) > sections.(event_id, name)
 Ref: offers.event_id > events.id
 Ref: seat_offers.(event_id, place_id) > seats.(event_id, place_id)
 Ref: seat_offers.(event_id, offer_id) > offers.(event_id, offer_id)
+Ref: detail_queue.event_id > events.id

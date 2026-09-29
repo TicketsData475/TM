@@ -215,3 +215,105 @@ def sweep_unavailable(conn, event_ids, run_ts):
             (list(event_ids), run_ts),
         )
         return cur.rowcount
+
+
+# ---------------------------------------------------------------------------
+# Detail work queue (TM.detail_queue): discovery enqueues, workers claim/finish.
+# ---------------------------------------------------------------------------
+def _queue_tbl():
+    return f'{_q(DB_SCHEMA)}.{_q("detail_queue")}'
+
+
+def enqueue_events(conn, event_ids, run_ts):
+    """Mark events as needing a detail scrape. New rows -> pending; existing rows
+    reset to pending (attempts=0) UNLESS a worker currently has them leased."""
+    if not event_ids:
+        return 0
+    rows = [(eid, run_ts, run_ts) for eid in event_ids]
+    with conn.cursor() as cur:
+        execute_values(
+            cur,
+            f'INSERT INTO {_queue_tbl()} AS q '
+            f'({_q("event_id")}, {_q("enqueued_at")}, {_q("updated_at")}) VALUES %s '
+            f'ON CONFLICT ({_q("event_id")}) DO UPDATE SET '
+            f'  {_q("status")} = CASE WHEN q.{_q("status")} = \'leased\' '
+            f'                        THEN q.{_q("status")} ELSE \'pending\' END, '
+            f'  {_q("attempts")} = CASE WHEN q.{_q("status")} = \'leased\' '
+            f'                          THEN q.{_q("attempts")} ELSE 0 END, '
+            f'  {_q("updated_at")} = EXCLUDED.{_q("updated_at")}',
+            rows,
+        )
+        return cur.rowcount
+
+
+def claim_events(conn, worker_id, batch_size, lease_minutes):
+    """Atomically lease up to batch_size events to this worker. Returns event_ids.
+
+    Picks 'pending' rows plus any 'leased' rows whose lease has expired (crashed
+    worker). FOR UPDATE SKIP LOCKED lets many workers/machines claim in parallel
+    without ever grabbing the same row. Stalest (or never-scraped) events first."""
+    with conn.cursor() as cur:
+        cur.execute(
+            f'WITH picked AS ('
+            f'  SELECT {_q("event_id")} FROM {_queue_tbl()} '
+            f'  WHERE {_q("status")} = \'pending\' '
+            f'     OR ({_q("status")} = \'leased\' '
+            f'         AND {_q("leased_at")} < now() - (%s || \' minutes\')::interval) '
+            f'  ORDER BY {_q("last_detail_at")} NULLS FIRST '
+            f'  FOR UPDATE SKIP LOCKED LIMIT %s'
+            f') '
+            f'UPDATE {_queue_tbl()} q SET '
+            f'  {_q("status")} = \'leased\', {_q("leased_at")} = now(), '
+            f'  {_q("leased_by")} = %s, {_q("updated_at")} = now() '
+            f'FROM picked WHERE q.{_q("event_id")} = picked.{_q("event_id")} '
+            f'RETURNING q.{_q("event_id")}',
+            (lease_minutes, batch_size, worker_id),
+        )
+        return [r[0] for r in cur.fetchall()]
+
+
+def complete_event(conn, event_id, run_ts):
+    """Mark one event successfully scraped."""
+    with conn.cursor() as cur:
+        cur.execute(
+            f'UPDATE {_queue_tbl()} SET {_q("status")} = \'done\', '
+            f'{_q("last_detail_at")} = %s, {_q("leased_by")} = NULL, '
+            f'{_q("updated_at")} = now() WHERE {_q("event_id")} = %s',
+            (run_ts, event_id),
+        )
+
+
+def fail_event(conn, event_id, max_attempts, fatal=False):
+    """Count a failure. Back to 'pending' for another try, or 'failed' once attempts
+    hit max_attempts. `fatal=True` (e.g. a 404 -- event doesn't exist) marks it
+    'failed' immediately, no retries."""
+    with conn.cursor() as cur:
+        cur.execute(
+            f'UPDATE {_queue_tbl()} SET '
+            f'  {_q("attempts")} = {_q("attempts")} + 1, '
+            f'  {_q("status")} = CASE WHEN %s OR {_q("attempts")} + 1 >= %s '
+            f'                        THEN \'failed\' ELSE \'pending\' END, '
+            f'  {_q("leased_by")} = NULL, {_q("updated_at")} = now() '
+            f'WHERE {_q("event_id")} = %s',
+            (fatal, max_attempts, event_id),
+        )
+
+
+def release_event(conn, event_id):
+    """Return a leased event to 'pending' WITHOUT counting an attempt -- used when
+    the failure was the session's fault (Kasada block), not the event's."""
+    with conn.cursor() as cur:
+        cur.execute(
+            f'UPDATE {_queue_tbl()} SET {_q("status")} = \'pending\', '
+            f'{_q("leased_by")} = NULL, {_q("updated_at")} = now() '
+            f'WHERE {_q("event_id")} = %s',
+            (event_id,),
+        )
+
+
+def queue_counts(conn):
+    """{status: count} snapshot of the queue, for logging."""
+    with conn.cursor() as cur:
+        cur.execute(f'SELECT {_q("status")}, count(*) FROM {_queue_tbl()} '
+                    f'GROUP BY {_q("status")}')
+        return {row[0]: row[1] for row in cur.fetchall()}

@@ -314,3 +314,25 @@ ALTER TABLE "TM"."offers" ADD FOREIGN KEY ("event_id") REFERENCES "TM"."events" 
 ALTER TABLE "TM"."seat_offers" ADD FOREIGN KEY ("event_id", "place_id") REFERENCES "TM"."seats" ("event_id", "place_id") DEFERRABLE INITIALLY IMMEDIATE;
 
 ALTER TABLE "TM"."seat_offers" ADD FOREIGN KEY ("event_id", "offer_id") REFERENCES "TM"."offers" ("event_id", "offer_id") DEFERRABLE INITIALLY IMMEDIATE;
+
+-- ---------------------------------------------------------------------------
+-- Detail work queue: discovery enqueues events; detail workers claim + scrape.
+-- Enables resume-on-crash (lease timeout) and horizontal scale (FOR UPDATE
+-- SKIP LOCKED lets many workers/machines drain it without double-claiming).
+-- ---------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS "TM"."detail_queue" (
+  "event_id" varchar PRIMARY KEY,
+  "status" varchar NOT NULL DEFAULT 'pending',   -- pending | leased | done | failed
+  "leased_at" timestamptz,
+  "leased_by" varchar,
+  "attempts" integer NOT NULL DEFAULT 0,
+  "last_detail_at" timestamptz,                  -- last successful detail scrape
+  "enqueued_at" timestamptz DEFAULT now(),
+  "updated_at" timestamptz DEFAULT now()
+);
+
+-- claim ordering: never-scraped first, then stalest; filtered by status
+CREATE INDEX IF NOT EXISTS "idx_detail_queue_claim"
+  ON "TM"."detail_queue" ("status", "last_detail_at" NULLS FIRST);
+
+ALTER TABLE "TM"."detail_queue" ADD FOREIGN KEY ("event_id") REFERENCES "TM"."events" ("id") DEFERRABLE INITIALLY IMMEDIATE;
