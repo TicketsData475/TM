@@ -37,18 +37,18 @@ def get_proxy_provider() -> ProxyProvider | None:
         from proxies.db_source import ProxyDbClaimProvider, load_proxies_by_ids
 
         db = ProxyDB()
-        # backstop: free any proxies a crashed run left marked in_use
-        try:
-            reclaimed = db.reclaim_stale(config.PROXY_DB_STALE_MINUTES)
-            if reclaimed:
-                logger.info("reclaimed %d stale proxy claims", reclaimed)
-        except Exception as e:  # noqa: BLE001
-            logger.warning("reclaim_stale failed: %s", e)
-
         if config.PROXY_DB_CLAIM_MODE:
+            # claim/release marks in_use; backstop-free any left in_use by a crash
+            try:
+                reclaimed = db.reclaim_stale(config.PROXY_DB_STALE_MINUTES)
+                if reclaimed:
+                    logger.info("reclaimed %d stale proxy claims", reclaimed)
+            except Exception as e:  # noqa: BLE001
+                logger.warning("reclaim_stale failed: %s", e)
             provider = ProxyDbClaimProvider(db, config.PROXY_DB_IDS)
             provider = ThreadSafeProxyProviderDecorator(provider)
         else:
+            # read-only: just load the proxies by id and round-robin, never touch in_use
             provider = RoundRobinListProxyProvider(load_proxies_by_ids(db, config.PROXY_DB_IDS))
             provider = CredsTemplateExpandingDecorator(provider)
             provider = ThreadSafeProxyProviderDecorator(provider)

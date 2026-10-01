@@ -26,17 +26,19 @@ class ProxyBlocked(Exception):
 
 _SEARCH_FETCH_JS = """
 async ([url, region]) => {
-  const r = await fetch(url, {
-    headers: {
-      'accept': 'application/json',
-      'x-tmclient-app': 'marketplace_fe',
-      'x-tmlangcode': 'en-us',
-      'x-tmplatform': 'global',
-      'x-tmregion': region,
-    },
-    credentials: 'include',
-  });
-  return { status: r.status, body: await r.text() };
+  try {
+    const r = await fetch(url, {
+      headers: {
+        'accept': 'application/json',
+        'x-tmclient-app': 'marketplace_fe',
+        'x-tmlangcode': 'en-us',
+        'x-tmplatform': 'global',
+        'x-tmregion': region,
+      },
+      credentials: 'include',
+    });
+    return { status: r.status, body: await r.text() };
+  } catch (e) { return { status: -1, body: 'FETCH_ERROR: ' + String(e) }; }
 }
 """
 
@@ -290,35 +292,64 @@ class TMSession:
         _LOG.info("session refreshed (fresh cookies on proxy id=%s)",
                   self._proxy.proxy_id if self._proxy else None)
 
-    async def discover_events(self, max_pages=200, page_delay_ms=1200, attempts=4):
-        """Page through the search API from inside the browser. Returns event dicts.
+    async def discover_events(self, query=None, start=None, end=None,
+                              max_pages=200, page_delay_ms=1200, attempts=4, max_rotations=3):
+        """Page through the search API from inside the browser for one query
+        (e.g. 'nfl'/'nba'/'nhl') over a [start, end] date window. Returns event dicts.
 
-        Kasada blocks rapid pagination, so we pace requests and, on a block/non-200,
-        reload the page to re-solve the challenge and retry the same page a few
-        times before giving up (returns whatever was collected so far)."""
+        The API caps deep pagination at ~980 (HTTP 400) -> callers pass a narrow
+        date window to stay under it. Kasada may block rapid pagination: we re-solve
+        a few times, and if a page stays blocked we rotate to a fresh exit IP and
+        retry it (up to max_rotations) before giving up with what we have."""
         import json as _json
 
-        events, page_num, total = [], 1, None
+        q = query or config.QUERY
+        start = start or config.START_DATE
+        end = end or config.END_DATE
+        tag = f"{q} {start[:7]}"          # e.g. "nba 2026-10"
+        events, page_num, total, rotations = [], 1, None, 0
         while page_num <= max_pages:
             api = config.SEARCH_API_URL.format(
-                q=config.QUERY, region=config.REGION,
-                start=config.START_DATE, end=config.END_DATE, page=page_num,
+                q=q, region=config.REGION, start=start, end=end, page=page_num,
             )
             data = None
+            capped = False
             for attempt in range(1, attempts + 1):
-                res = await self._page.evaluate(_SEARCH_FETCH_JS, [api, config.REGION])
+                try:
+                    res = await self._page.evaluate(_SEARCH_FETCH_JS, [api, config.REGION])
+                except Exception as e:  # noqa: BLE001 - transient network / page mid-nav
+                    res = {"status": -1, "body": repr(e)[:80]}
                 if res["status"] == 200:
-                    data = _json.loads(res["body"])
+                    try:
+                        data = _json.loads(res["body"])
+                        break
+                    except Exception:  # noqa: BLE001 - truncated/garbled body -> retry
+                        res = {"status": -2, "body": "bad json"}
+                if res["status"] == 400:      # ~980 deep-pagination cap, not a block
+                    _LOG.info("[%s] page %d -> 400: reached TM's ~980 pagination cap; "
+                              "stopping this window at %d events", tag, page_num, len(events))
+                    capped = True
                     break
-                _LOG.warning("search page %d attempt %d/%d -> HTTP %s (%s); "
-                             "re-solving Kasada...", page_num, attempt, attempts,
+                _LOG.warning("[%s] page %d attempt %d/%d -> HTTP %s (%s); re-solving...",
+                             tag, page_num, attempt, attempts,
                              res["status"], (res["body"] or "")[:80])
-                await self._page.reload(wait_until="domcontentloaded", timeout=60000)
+                try:
+                    await self._page.reload(wait_until="domcontentloaded", timeout=60000)
+                except Exception:  # noqa: BLE001
+                    pass
                 await self._page.wait_for_timeout(3000 + attempt * 2500)
 
+            if capped:
+                break
             if data is None:
-                _LOG.error("giving up on page %d after %d attempts; continuing with "
-                           "%d events collected so far", page_num, attempts, len(events))
+                if rotations < max_rotations:      # IP likely flagged -> fresh IP, retry page
+                    rotations += 1
+                    _LOG.info("[%s] page %d blocked; rotating exit IP (%d/%d) and retrying...",
+                              tag, page_num, rotations, max_rotations)
+                    await self.rotate()
+                    continue
+                _LOG.error("[%s] giving up on page %d after %d attempts + %d rotations; "
+                           "keeping %d events", tag, page_num, attempts, rotations, len(events))
                 break
 
             batch = data.get("events", [])
@@ -326,8 +357,8 @@ class TMSession:
                 break
             events.extend(batch)
             total = data.get("total", total)
-            _LOG.info("discovery page %d: +%d events (%d%s collected)",
-                      page_num, len(batch), len(events),
+            _LOG.info("[%s] page %d: +%d events (%d%s collected)",
+                      tag, page_num, len(batch), len(events),
                       "/" + str(total) if total else "")
             if total and len(events) >= total:
                 break

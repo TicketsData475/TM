@@ -4,6 +4,7 @@ Fast (~1-2 min). Run on a schedule. Detail scraping is done separately by
 worker.py, which claims events from the TM.detail_queue this fills.
 """
 import time
+from datetime import date, timedelta
 
 import config
 import db
@@ -13,14 +14,38 @@ import parse
 _LOG = log.get("discover")
 
 
+def _month_windows(start_iso, end_iso):
+    """Split [start, end] into calendar-month windows so each stays under TM's
+    ~980 deep-pagination cap. Returns [(start_iso, end_iso), ...]."""
+    start, end = date.fromisoformat(start_iso), date.fromisoformat(end_iso)
+    windows, cur = [], start
+    while cur <= end:
+        first_of_next = (date(cur.year + 1, 1, 1) if cur.month == 12
+                         else date(cur.year, cur.month + 1, 1))
+        win_end = min(first_of_next - timedelta(days=1), end)
+        windows.append((cur.isoformat(), win_end.isoformat()))
+        cur = first_of_next
+    return windows
+
+
 async def run_discovery(conn, session, run_ts):
     """Discover events -> upsert venues/events/artists -> enqueue events for detail.
     Returns the list of event ids enqueued."""
-    _LOG.info("discovering events (query=%r, %s..%s)...",
-              config.QUERY, config.START_DATE, config.END_DATE)
+    windows = _month_windows(config.START_DATE, config.END_DATE)
+    _LOG.info("discovering events (queries=%s, %s..%s, %d month-windows each)...",
+              ",".join(config.QUERIES), config.START_DATE, config.END_DATE, len(windows))
     t = time.monotonic()
-    events = await session.discover_events()
-    _LOG.info("discovery done: %d events in %s", len(events), log.fmt_secs(time.monotonic() - t))
+    by_id = {}
+    for q in config.QUERIES:              # each query x month-window stays under the ~980 cap
+        before = len(by_id)
+        for (win_start, win_end) in windows:
+            found = await session.discover_events(query=q, start=win_start, end=win_end)
+            for ev in found:
+                by_id[ev["id"]] = ev      # dedupe across windows/queries
+        _LOG.info("[%s] found %d events (%d unique so far)", q, len(by_id) - before, len(by_id))
+    events = list(by_id.values())
+    _LOG.info("discovery done: %d unique events across %d queries in %s",
+              len(events), len(config.QUERIES), log.fmt_secs(time.monotonic() - t))
 
     venues, event_rows, artists, event_artists = {}, [], {}, []
     partner_skipped = promo_skipped = skipped = 0

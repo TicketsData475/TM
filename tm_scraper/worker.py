@@ -27,7 +27,7 @@ async def run_worker(conn, session):
 
     done = errored_total = 0
     t0 = time.monotonic()
-    block_streak = 0
+    block_cycles = 0
 
     async def on_result(event_id, facets_doc, manifest):
         """Persist one event + sweep its stale seats + mark done. A fresh per-event
@@ -82,17 +82,23 @@ async def run_worker(conn, session):
         conn.commit()
 
         if session_blocked:
-            block_streak += 1
-            if block_streak == 1:
+            block_cycles += 1
+            if block_cycles == 1:
                 _LOG.info("%d/%d blocked (session); refreshing (same IP)...",
                           len(blocked), len(event_ids))
                 await session.refresh()
-            else:
-                _LOG.info("%d/%d blocked again; rotating proxy IP...", len(blocked), len(event_ids))
+            elif block_cycles == 2:
+                _LOG.info("still blocked; rotating to a fresh exit IP...")
                 await session.rotate()
-                block_streak = 0
+            else:
+                # IPs look burned -> stop hammering, cool down, then rotate
+                _LOG.warning("blocked %d cycles in a row; cooling down %ds to let the "
+                             "exit IPs recover, then rotating (more proxies would help "
+                             "at this scale)...", block_cycles, config.WORKER_BLOCK_COOLDOWN)
+                await asyncio.sleep(config.WORKER_BLOCK_COOLDOWN)
+                await session.rotate()
         else:
-            block_streak = 0
+            block_cycles = 0
             if blocked:
                 _LOG.info("%d event(s) individually blocked (kept scraping %d); "
                           "penalised, not a session block", len(blocked), len(results))

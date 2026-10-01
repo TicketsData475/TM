@@ -23,7 +23,7 @@ def main():
                     help="discover events, run a detail worker, or both (default: all)")
     ap.add_argument("--headed", action="store_true", help="run browser non-headless (needed for Kasada)")
     ap.add_argument("--seat-mode", choices=["available", "full"], help="override SEAT_MODE")
-    ap.add_argument("--query", help="override search query (e.g. nfl)")
+    ap.add_argument("--query", help="override search queries (comma-separated, e.g. nfl,nba,nhl)")
     ap.add_argument("--refresh-manifest", action="store_true", help="ignore manifest cache")
     ap.add_argument("-v", "--verbose", action="store_true", help="DEBUG-level logging")
     ap.add_argument("--limit", type=int, help="discover: enqueue only the first N events (debug)")
@@ -34,7 +34,8 @@ def main():
     if args.seat_mode:
         config.SEAT_MODE = args.seat_mode
     if args.query:
-        config.QUERY = args.query
+        config.QUERIES = [q.strip().lower() for q in args.query.split(",") if q.strip()]
+        config.QUERY = config.QUERIES[0]
     if args.refresh_manifest:
         config.REFRESH_MANIFEST = True
     if args.verbose:
@@ -58,8 +59,8 @@ async def _dispatch(mode):
 
     _LOG = log.get("main")
     _LOG.info("=" * 68)
-    _LOG.info("TM scraper | mode=%s | query=%r | window=%s..%s | seat_mode=%s",
-              mode, config.QUERY, config.START_DATE, config.END_DATE, config.SEAT_MODE)
+    _LOG.info("TM scraper | mode=%s | queries=%s | window=%s..%s | seat_mode=%s",
+              mode, ",".join(config.QUERIES), config.START_DATE, config.END_DATE, config.SEAT_MODE)
     _LOG.info("=" * 68)
 
     conn = db.connect()

@@ -28,7 +28,11 @@ PG = {
 DB_SCHEMA = os.getenv("DB_SCHEMA", "TM")
 
 # --- Scrape scope ---
-QUERY = _env("TM_QUERY", "nfl")
+# Leagues/queries to discover. TM_QUERIES (comma-separated) is preferred; falls
+# back to the old single TM_QUERY, else defaults to nfl+nba+nhl.
+QUERIES = [q.strip().lower() for q in
+           (_env("TM_QUERIES") or _env("TM_QUERY") or "nfl,nba,nhl").split(",") if q.strip()]
+QUERY = QUERIES[0]                              # used for the initial Kasada page load + warm-up
 REGION = _env("TM_REGION", "200")
 START_DATE = _env("TM_START_DATE") or date.today().isoformat()
 END_DATE = _env("TM_END_DATE") or (date.today() + timedelta(days=180)).isoformat()
@@ -51,6 +55,10 @@ CLAIM_BATCH = int(_env("CLAIM_BATCH", "20"))          # events leased per claim
 LEASE_MINUTES = int(_env("LEASE_MINUTES", "15"))      # a lease older than this = crashed worker
 MAX_ATTEMPTS = int(_env("MAX_ATTEMPTS", "3"))         # hard failures before -> 'failed'
 WORKER_IDLE_SLEEP = int(_env("WORKER_IDLE_SLEEP", "0"))  # queue-empty wait; 0 = exit when drained
+# When whole batches keep getting Kasada-blocked (the exit IPs are burned/flagged),
+# stop tight-looping: after refresh + rotate still fail, sleep this long to let the
+# IPs recover before trying again.
+WORKER_BLOCK_COOLDOWN = int(_env("WORKER_BLOCK_COOLDOWN", "180"))
 # Promo/non-seatmap listings (titles containing these) have no seat map -> no
 # facets. Skipped in the detail stage to avoid wasting ~3 min each on failures.
 SKIP_TITLE_KEYWORDS = ("HALF PRICE", "PARKING", "HOSPITALITY", "PACKAGE")
@@ -86,7 +94,7 @@ TOKEN_MAX_RENEWS = int(_env("TOKEN_MAX_RENEWS", "1"))
 # Each proxy id is a self-rotating endpoint: hitting its refresh_url swaps the
 # exit IP. Seconds to wait after a rotate_ip call for the new IP to take effect,
 # and (longer) when the id is on cooldown (HTTP 422 = rotated too recently).
-PROXY_ROTATE_WAIT = int(_env("PROXY_ROTATE_WAIT", "13"))
+PROXY_ROTATE_WAIT = int(_env("PROXY_ROTATE_WAIT", "20"))
 PROXY_COOLDOWN_WAIT = int(_env("PROXY_COOLDOWN_WAIT", "60"))
 
 # 2) single proxy
