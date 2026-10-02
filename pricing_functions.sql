@@ -32,7 +32,8 @@ BEGIN
     FOR r IN
         SELECT oid::regprocedure AS sig FROM pg_proc
         WHERE pronamespace = (SELECT oid FROM pg_namespace WHERE nspname = 'TM')
-          AND proname IN ('estimate_seat_price', 'quote')
+          AND proname IN ('estimate_seat_price', 'quote',
+                          'aceify_estimate_seat_price', 'aceify_quote')
     LOOP
         EXECUTE 'DROP FUNCTION ' || r.sig;
     END LOOP;
@@ -183,4 +184,54 @@ AS $$
            e.margin         AS margin
     FROM "TM".estimate_seat_price(p_event_id, p_section, p_row, p_inventory_type,
                                   p_percentile, p_rank_window, p_max_sections, p_margin) e;
+$$;
+
+
+-- =====================================================================
+-- aceify customer: same model/signature/defaults as the TC functions above,
+-- just a separate namespace (overridable params -> nothing hard-coded for them).
+-- NOTE: tennis (Australian Open) per-seat inventory is PRIMARY, so for those
+-- events call with p_inventory_type => 'primary'.
+-- =====================================================================
+CREATE FUNCTION "TM".aceify_estimate_seat_price(
+    p_event_id       varchar,
+    p_section        varchar,
+    p_row            varchar  DEFAULT NULL,
+    p_inventory_type varchar  DEFAULT 'resale',
+    p_percentile     numeric  DEFAULT 0,
+    p_rank_window    integer  DEFAULT 200,
+    p_max_sections   integer  DEFAULT 7,
+    p_margin         numeric  DEFAULT 0.30
+)
+RETURNS TABLE (
+    basis text, target_rank integer, seats_considered integer, sections_used integer,
+    related_sections text, price numeric, median_price numeric, low_price numeric,
+    comp_price numeric, margin numeric
+)
+LANGUAGE sql STABLE
+AS $$
+    SELECT * FROM "TM".estimate_seat_price(p_event_id, p_section, p_row,
+        p_inventory_type, p_percentile, p_rank_window, p_max_sections, p_margin);
+$$;
+
+CREATE FUNCTION "TM".aceify_quote(
+    p_event_id       varchar,
+    p_section        varchar,
+    p_row            varchar,
+    p_quantity       integer,
+    p_inventory_type varchar DEFAULT 'resale',
+    p_percentile     numeric DEFAULT 0,
+    p_rank_window    integer DEFAULT 200,
+    p_max_sections   integer DEFAULT 7,
+    p_margin         numeric DEFAULT 0.30
+)
+RETURNS TABLE (
+    basis text, target_rank integer, seats_considered integer, sections_used integer,
+    related_sections text, price_per_seat numeric, quantity integer, subtotal numeric,
+    comp_price_per_seat numeric, margin numeric
+)
+LANGUAGE sql STABLE
+AS $$
+    SELECT * FROM "TM".quote(p_event_id, p_section, p_row, p_quantity,
+        p_inventory_type, p_percentile, p_rank_window, p_max_sections, p_margin);
 $$;

@@ -58,6 +58,7 @@ async def run_discovery(conn, session, run_ts):
             promo_skipped += 1
             continue
         venue, event, ev_artists, ea = parse.extract_event_entities(ev)
+        event["customer"] = config.CUSTOMER          # which client this event is for
         if event["venue_id"] is None:
             skipped += 1
             _LOG.warning("skipping event %s (%s): no venue code", event["id"], event.get("title"))

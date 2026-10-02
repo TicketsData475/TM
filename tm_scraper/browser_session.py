@@ -11,6 +11,7 @@ import asyncio
 import shutil
 import tempfile
 import time
+from urllib.parse import urlsplit
 from patchright.async_api import async_playwright
 
 import config
@@ -56,6 +57,7 @@ class TMSession:
         self._proxy = None        # Proxy the browser AND the facets fetches share
         self._c_tmpt = None       # cached token minted on _proxy's IP
         self._cookie = None       # cached cookie header for the same context
+        self._brand_urls = []     # brand-domain event urls to (re)warm on every context
 
     def _claim_new_proxy(self):
         """Claim a proxy (sync), retrying briefly if the pool is momentarily full."""
@@ -122,6 +124,7 @@ class TMSession:
         await self._warm_kasada()          # harden the cookie so curl is trusted
         self._c_tmpt = await self.get_tmpt()
         self._cookie = await self.get_cookie_header()
+        await self.warm_brands()           # re-solve brand-domain Kasada (.com.au, ...)
 
     async def _warm_kasada(self, rounds=None):
         """Fire a few in-page (JS-signed) search fetches so Kasada upgrades the
@@ -256,6 +259,75 @@ class TMSession:
             if "ticketmaster.com" in c.get("domain", ""):
                 parts.append(f"{c['name']}={c['value']}")
         return "; ".join(parts)
+
+    async def cookies_for_host(self, host):
+        """Cookie header with ONLY cookies valid for `host`, so a .com.au request
+        doesn't carry .com cookies (different Kasada session) and vice-versa."""
+        parts = []
+        for c in await self._ctx.cookies():
+            dom = (c.get("domain") or "").lstrip(".")
+            if dom and (host == dom or host.endswith("." + dom)):
+                parts.append(f"{c['name']}={c['value']}")
+        return "; ".join(parts)
+
+    async def warm_brand(self, event_url):
+        """Solve Kasada on a NON-US brand domain (e.g. ticketmaster.com.au) so curl
+        requests to that domain's endpoints (quickpicks etc.) carry a trusted
+        session. Loads the brand HOME first (clears Kasada more gently than a cold
+        event page), then the event page (so its APIs fire). Adds its cookies to
+        the context. Returns True if Kasada cleared."""
+        host = urlsplit(event_url).netloc
+        base = f"{urlsplit(event_url).scheme}://{host}"
+        _LOG.info("warming brand domain %s ...", host)
+        accepted = False
+        for target in (base, event_url):          # home first, then the event page
+            for attempt in range(2):              # reload once if it won't clear
+                if not await self.goto_retry(target):
+                    continue
+                cleared = False
+                for i in range(16):               # up to ~48s for the interstitial
+                    await self._page.wait_for_timeout(3000)
+                    try:
+                        content = (await self._page.content()).lower()
+                    except Exception:  # noqa: BLE001
+                        content = ""
+                    if not accepted:
+                        for sel in ("#onetrust-accept-btn-handler", 'button:has-text("Accept")'):
+                            try:
+                                el = self._page.locator(sel).first
+                                if await el.count():
+                                    await el.click(timeout=2500); accepted = True; break
+                            except Exception:  # noqa: BLE001
+                                pass
+                    if content and "activity has been paused" not in content \
+                            and "browsing activity" not in content:
+                        cleared = True
+                        break
+                if cleared:
+                    break
+            else:
+                _LOG.warning("brand domain %s did not clear on %s", host, target)
+        await self._page.wait_for_timeout(8000)   # let the event page fire its APIs
+        ok = "activity has been paused" not in (await self._safe_page_text())
+        _LOG.info("brand domain %s %s", host, "warmed" if ok else "NOT warmed (Kasada paused)")
+        return ok
+
+    async def _safe_page_text(self):
+        try:
+            return (await self._page.content()).lower()
+        except Exception:  # noqa: BLE001
+            return ""
+
+    def set_brand_urls(self, urls):
+        """One event url per brand domain to (re)warm whenever the context is
+        (re)built -- so a rotate/refresh doesn't drop the .com.au Kasada session."""
+        self._brand_urls = list(urls)
+
+    async def warm_brands(self):
+        """(Re)warm every registered brand domain. Called on each _open_context, so
+        rotations keep their .com.au session instead of losing it."""
+        for url in self._brand_urls:
+            await self.warm_brand(url)
 
     async def ensure_tmpt(self, event_url=None):
         """Return a tmpt token; if the search page didn't set one, visit an

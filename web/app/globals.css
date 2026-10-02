@@ -96,3 +96,64 @@ body {
 .qTotal b { font-size: 20px; color: #1e3a8a; }
 .qNote { color: #64748b; font-size: 12px; margin-top: 10px; }
 .qMsg { color: #475569; font-size: 14px; }
+
+/* ==================== aceify additions ==================== */
+.brand {
+  text-align: center; color: #bfdbfe; font-size: 12px; font-weight: 700;
+  letter-spacing: .08em; text-transform: uppercase; margin-bottom: 4px;
+}
+
+/* three-way price-basis toggle (Primary / Resale / All) */
+.toggle3 { display: flex; border: 1px solid #cbd5e1; border-radius: 8px; overflow: hidden; max-width: 320px; }
+.toggle3 button {
+  flex: 1; padding: 9px 8px; border: none; background: #fff; cursor: pointer;
+  font-size: 13px; color: #475569;
+}
+.toggle3 button.on { background: #1e3a8a; color: #fff; font-weight: 600; }
+.toggle3 button + button { border-left: 1px solid #cbd5e1; }
+
+/* advanced pricing controls card */
+.advCard { margin-top: 20px; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; }
+.advHead {
+  width: 100%; display: flex; justify-content: space-between; align-items: center;
+  padding: 12px 16px; background: #f8fafc; border: none; cursor: pointer;
+  font-size: 14px; font-weight: 600; color: #0f172a;
+}
+.advHeadLeft { display: flex; align-items: center; gap: 8px; }
+.gear { font-size: 15px; }
+.defBadge {
+  font-size: 11px; font-weight: 600; color: #166534; background: #dcfce7;
+  border-radius: 999px; padding: 2px 8px; letter-spacing: .02em;
+}
+.chev { color: #64748b; font-size: 11px; }
+.advSummary {
+  padding: 10px 16px; font-size: 12.5px; color: #64748b;
+  border-top: 1px solid #f1f5f9; background: #fff;
+}
+.advBody { padding: 16px; border-top: 1px solid #f1f5f9; background: #fff; }
+.advIntro { margin: 0 0 16px; font-size: 13px; color: #475569; line-height: 1.5; }
+
+.ctrl { margin-bottom: 16px; }
+.ctrl > label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+.ctrlInput { display: flex; align-items: center; gap: 8px; max-width: 220px; }
+.ctrlInput input {
+  width: 110px; padding: 9px 11px; border: 1px solid #cbd5e1; border-radius: 8px;
+  font-size: 14px; color: #0f172a; outline: none;
+}
+.ctrlInput input:focus { border-color: #2563eb; }
+.ctrlInput .unit { font-size: 13px; color: #64748b; }
+.help { font-size: 12px; color: #64748b; line-height: 1.5; margin-top: 6px; max-width: 560px; }
+.help b { color: #334155; }
+
+.ctrlGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 24px; }
+@media (max-width: 640px) { .ctrlGrid { grid-template-columns: 1fr; } }
+
+.resetBtn {
+  margin-top: 4px; background: none; border: 1px solid #cbd5e1; border-radius: 8px;
+  padding: 8px 12px; font-size: 13px; color: #2563eb; cursor: pointer; font-weight: 600;
+}
+.resetBtn:hover { background: #f8fafc; }
+
+/* offer line in the quote box (between market price and total) */
+.qOffer { border-top: 1px dashed #e2e8f0; margin-top: 6px; padding-top: 10px; }
+.qOffer b { font-size: 18px; color: #166534; }

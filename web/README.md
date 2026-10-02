@@ -8,6 +8,29 @@ Simple front end for the quote tool:
 Talks to Postgres via the SQL functions in `../search_functions.sql`
 (`TM.search_events`, `TM.get_event_sections`, `TM.get_section_rows`).
 
+## Two customers
+
+| Route | Customer | DB functions | Default price basis |
+|-------|----------|--------------|---------------------|
+| `/`       | **TC** (leagues: NFL/NBA/NHL) | `TM.search_events`, `get_event_sections`, `get_section_rows`, `quote` | resale |
+| `/aceify` | **aceify** (tennis / Australian Open) | `TM.aceify_search_events`, `aceify_get_event_sections`, `aceify_get_section_rows`, `aceify_quote` | **primary** |
+
+`search_events` is filtered by the `events.customer` column, so each page only
+ever shows its own customer's events. The two paths are fully independent (separate
+pages + separate `/api/aceify/*` routes); changing one never affects the other.
+
+The **aceify** page (`/aceify`) adds a collapsible **Pricing controls** panel so the
+customer can override the algorithm — each knob has a plain-language description of
+what it does and how it moves the quote:
+
+| Control | What it does |
+|---------|--------------|
+| Price basis | primary (box-office / face value — default for tennis) · resale · all |
+| Percentile  | where in the comparable-seat price range we read the market price (0% = cheapest) |
+| Rank window | how far to reach for "comparable" seats, by venue-wide seat-quality rank |
+| Max sections| the most nearby sections to pool comparable seats from |
+| Your margin | aceify's buyback profit cut; offer = market price − margin (default 30%) |
+
 ## Prereqs
 - Node 18+
 - The DB functions installed (run `../search_functions.sql` once) and

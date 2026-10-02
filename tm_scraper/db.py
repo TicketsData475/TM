@@ -33,7 +33,7 @@ TABLES = {
          "seatmap_url", "is_partner_event", "is_partner", "is_tm_button_shown",
          "timezone", "is_cancelled", "is_postponed", "is_rescheduled", "is_tba",
          "is_local", "is_same_region", "is_sold_out", "is_limited_availability",
-         "is_virtual", "event_change_status"],
+         "is_virtual", "event_change_status", "customer"],
         True, "created_at",
     ),
     "artists": (
@@ -240,6 +240,9 @@ def enqueue_events(conn, event_ids, run_ts):
             f'                        THEN q.{_q("status")} ELSE \'pending\' END, '
             f'  {_q("attempts")} = CASE WHEN q.{_q("status")} = \'leased\' '
             f'                          THEN q.{_q("attempts")} ELSE 0 END, '
+            # a fresh discovery clears any block backoff so it's immediately eligible
+            f'  {_q("next_attempt_at")} = CASE WHEN q.{_q("status")} = \'leased\' '
+            f'                                 THEN q.{_q("next_attempt_at")} ELSE NULL END, '
             f'  {_q("updated_at")} = EXCLUDED.{_q("updated_at")}',
             rows,
         )
@@ -256,10 +259,13 @@ def claim_events(conn, worker_id, batch_size, lease_minutes):
         cur.execute(
             f'WITH picked AS ('
             f'  SELECT {_q("event_id")} FROM {_queue_tbl()} '
-            f'  WHERE {_q("status")} = \'pending\' '
+            f'  WHERE ({_q("status")} = \'pending\' '
             f'     OR ({_q("status")} = \'leased\' '
-            f'         AND {_q("leased_at")} < now() - (%s || \' minutes\')::interval) '
-            f'  ORDER BY {_q("last_detail_at")} NULLS FIRST '
+            f'         AND {_q("leased_at")} < now() - (%s || \' minutes\')::interval)) '
+            # skip events deferred after a block until their backoff has elapsed
+            f'   AND ({_q("next_attempt_at")} IS NULL OR {_q("next_attempt_at")} <= now()) '
+            f'  ORDER BY {_q("last_detail_at")} NULLS FIRST, '
+            f'           {_q("next_attempt_at")} NULLS FIRST '
             f'  FOR UPDATE SKIP LOCKED LIMIT %s'
             f') '
             f'UPDATE {_queue_tbl()} q SET '
@@ -299,16 +305,46 @@ def fail_event(conn, event_id, max_attempts, fatal=False):
         )
 
 
-def release_event(conn, event_id):
-    """Return a leased event to 'pending' WITHOUT counting an attempt -- used when
-    the failure was the session's fault (Kasada block), not the event's."""
+def defer_events(conn, event_ids, delay_seconds):
+    """Return blocked events to 'pending' WITHOUT counting an attempt, but hold them
+    for `delay_seconds` (next_attempt_at) so the worker moves on to OTHER events
+    instead of re-claiming the same just-blocked batch. Used for Kasada blocks (the
+    session/IP's fault, not the event's)."""
+    if not event_ids:
+        return
     with conn.cursor() as cur:
         cur.execute(
             f'UPDATE {_queue_tbl()} SET {_q("status")} = \'pending\', '
-            f'{_q("leased_by")} = NULL, {_q("updated_at")} = now() '
-            f'WHERE {_q("event_id")} = %s',
-            (event_id,),
+            f'{_q("leased_by")} = NULL, '
+            f'{_q("next_attempt_at")} = now() + (%s || \' seconds\')::interval, '
+            f'{_q("updated_at")} = now() '
+            f'WHERE {_q("event_id")} = ANY(%s)',
+            (delay_seconds, list(event_ids)),
         )
+
+
+def event_urls(conn, event_ids):
+    """{event_id: url} for the given events (used to pick the brand domain for
+    HOST-system events like the Australian Open)."""
+    if not event_ids:
+        return {}
+    tbl = f'{_q(DB_SCHEMA)}.{_q("events")}'
+    with conn.cursor() as cur:
+        cur.execute(f'SELECT {_q("id")}, {_q("url")} FROM {tbl} WHERE {_q("id")} = ANY(%s)',
+                    (list(event_ids),))
+        return {r[0]: r[1] for r in cur.fetchall()}
+
+
+def pending_event_urls(conn, limit=500):
+    """{event_id: url} for currently-claimable events -- used to discover which
+    brand domains (e.g. .com.au) the worker should warm before scraping."""
+    with conn.cursor() as cur:
+        cur.execute(
+            f'SELECT e.{_q("id")}, e.{_q("url")} '
+            f'FROM {_q(DB_SCHEMA)}.{_q("events")} e '
+            f'JOIN {_queue_tbl()} q ON q.{_q("event_id")} = e.{_q("id")} '
+            f'WHERE q.{_q("status")} = \'pending\' LIMIT %s', (limit,))
+        return {r[0]: r[1] for r in cur.fetchall()}
 
 
 def queue_counts(conn):

@@ -50,6 +50,7 @@ CREATE TABLE IF NOT EXISTS "TM"."events" (
   "is_limited_availability" boolean,
   "is_virtual" boolean,
   "event_change_status" varchar,
+  "customer" varchar DEFAULT 'TC',
   "created_at" timestamp,
   "updated_at" timestamp,
   "last_seen_at" timestamp
@@ -148,6 +149,8 @@ CREATE INDEX IF NOT EXISTS "idx_events_discovery_id" ON "TM"."events" ("discover
 CREATE INDEX IF NOT EXISTS "idx_events_venue_id" ON "TM"."events" ("venue_id");
 
 CREATE INDEX IF NOT EXISTS "idx_events_start_date" ON "TM"."events" ("start_date");
+
+CREATE INDEX IF NOT EXISTS "idx_events_customer" ON "TM"."events" ("customer");
 
 CREATE UNIQUE INDEX IF NOT EXISTS "uq_event_artists" ON "TM"."event_artists" ("event_id", "artist_id");
 
@@ -327,12 +330,13 @@ CREATE TABLE IF NOT EXISTS "TM"."detail_queue" (
   "leased_by" varchar,
   "attempts" integer NOT NULL DEFAULT 0,
   "last_detail_at" timestamptz,                  -- last successful detail scrape
+  "next_attempt_at" timestamptz,                 -- don't re-claim before this (block backoff)
   "enqueued_at" timestamptz DEFAULT now(),
   "updated_at" timestamptz DEFAULT now()
 );
 
--- claim ordering: never-scraped first, then stalest; filtered by status
-CREATE INDEX IF NOT EXISTS "idx_detail_queue_claim"
-  ON "TM"."detail_queue" ("status", "last_detail_at" NULLS FIRST);
+-- claim ordering: eligible (next_attempt_at past), never-scraped first, then stalest
+CREATE INDEX IF NOT EXISTS "idx_detail_queue_claim2"
+  ON "TM"."detail_queue" ("status", "next_attempt_at" NULLS FIRST, "last_detail_at" NULLS FIRST);
 
 ALTER TABLE "TM"."detail_queue" ADD FOREIGN KEY ("event_id") REFERENCES "TM"."events" ("id") DEFERRABLE INITIALLY IMMEDIATE;

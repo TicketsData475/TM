@@ -73,9 +73,15 @@ Table events {
 
     event_change_status varchar [note: "events -> eventChangeStatus"]
 
+    customer varchar [default: 'TC', note: "which client owns this event: 'TC' (leagues) or 'aceify' (tennis)"]
+
     created_at timestamp
     updated_at timestamp
     last_seen_at timestamp [note: "last scrape run this event appeared in; if stale -> dropped from feed"]
+
+    Indexes {
+      customer [name: 'idx_events_customer']
+    }
 
     indexes {
         discovery_id
@@ -222,11 +228,12 @@ Table detail_queue {
   leased_by varchar
   attempts integer [not null, default: 0]
   last_detail_at timestamptz [note: 'last successful detail scrape']
+  next_attempt_at timestamptz [note: "don't re-claim before this (block backoff)"]
   enqueued_at timestamptz
   updated_at timestamptz
 
   Indexes {
-    (status, last_detail_at) [name: 'idx_detail_queue_claim']
+    (status, next_attempt_at, last_detail_at) [name: 'idx_detail_queue_claim2']
   }
 }
 

@@ -34,6 +34,9 @@ QUERIES = [q.strip().lower() for q in
            (_env("TM_QUERIES") or _env("TM_QUERY") or "nfl,nba,nhl").split(",") if q.strip()]
 QUERY = QUERIES[0]                              # used for the initial Kasada page load + warm-up
 REGION = _env("TM_REGION", "200")
+# Which customer this discovery run's events belong to (events.customer). Set
+# CUSTOMER=aceify when discovering tennis; leagues default to TC.
+CUSTOMER = _env("CUSTOMER", "TC")
 START_DATE = _env("TM_START_DATE") or date.today().isoformat()
 END_DATE = _env("TM_END_DATE") or (date.today() + timedelta(days=180)).isoformat()
 
@@ -59,9 +62,18 @@ WORKER_IDLE_SLEEP = int(_env("WORKER_IDLE_SLEEP", "0"))  # queue-empty wait; 0 =
 # stop tight-looping: after refresh + rotate still fail, sleep this long to let the
 # IPs recover before trying again.
 WORKER_BLOCK_COOLDOWN = int(_env("WORKER_BLOCK_COOLDOWN", "180"))
+# A Kasada-blocked batch is deferred this long (next_attempt_at) instead of going
+# straight back to the front of the queue, so the worker moves on to other events
+# and retries the blocked ones later (not the same 20 over and over).
+BLOCK_DEFER_SECONDS = int(_env("BLOCK_DEFER_SECONDS", "900"))
+# If at least this fraction of a batch is blocked, treat it as the session/IP
+# degrading and refresh/rotate (not only at 100%).
+BLOCK_SESSION_RATIO = float(_env("BLOCK_SESSION_RATIO", "0.5"))
 # Promo/non-seatmap listings (titles containing these) have no seat map -> no
 # facets. Skipped in the detail stage to avoid wasting ~3 min each on failures.
-SKIP_TITLE_KEYWORDS = ("HALF PRICE", "PARKING", "HOSPITALITY", "PACKAGE")
+# "PASS" catches GA/pass products (Ground Pass, Grounds Pass, Passe-partout, ...)
+# which have no reserved seating to scrape.
+SKIP_TITLE_KEYWORDS = ("HALF PRICE", "PARKING", "HOSPITALITY", "PACKAGE", "PASS")
 HEADLESS = _env("HEADLESS", "false").lower() != "false"   # Kasada blocks headless
 REFRESH_MANIFEST = _env("REFRESH_MANIFEST", "false").lower() == "true"
 # Browser channel for the stealth (patchright) session. "chrome" drives real
@@ -143,6 +155,21 @@ OFFERS_URL = (
     "&show=listpricerange&embed=offer&resaleChannelId={channel}"
 )
 MANIFEST_URL = "https://pubapi.ticketmaster.com/sdk/static/manifest/v1/{event_id}"
+
+# --- HOST-system events (e.g. Australian Open) ---
+# These are NOT in ismds (facets return Error.NotFound). Their availability/prices
+# come from per-brand-domain endpoints instead; the domain is taken from the
+# event's own url (e.g. www.ticketmaster.com.au), else this fallback.
+HOST_FALLBACK_BASE = _env("HOST_FALLBACK_BASE", "https://www.ticketmaster.com.au")
+SEATMAPOFFERED_PATH = "/api/seatmap/seatmapoffered/{event_id}?resaleProvider=INTL"
+QUICKPICKS_PATH = (
+    "/api/quickpicks/{event_id}/list?sort=price&offset={offset}&qty=1"
+    "&primary=true&resale=true&defaultToOne=true&tids={tids}&resaleProvider=INTL"
+)
+QUICKPICKS_MAX_PAGES = int(_env("QUICKPICKS_MAX_PAGES", "80"))  # safety cap on pagination
+# quickpicks returns ~20 seats/page; paginating fast trips Kasada's per-endpoint
+# rate limit (block). Pace the pages (seconds between them) to look human.
+QUICKPICKS_PAGE_DELAY = float(_env("QUICKPICKS_PAGE_DELAY", "1.5"))
 
 MANIFEST_CACHE_DIR = os.path.join(os.path.dirname(__file__), "manifests")
 
