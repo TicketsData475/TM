@@ -227,7 +227,7 @@ export default function AceifyHome() {
 
   return (
     <div className="page">
-      <div className="brand">Aceify · Tennis ticket buyback</div>
+      <div className="brand">Aceify · Pricing Tool</div>
       <div className="title">Search an event to quote tickets</div>
 
       {/* search box + autocomplete */}
