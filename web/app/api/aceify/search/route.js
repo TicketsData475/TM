@@ -8,11 +8,12 @@ export async function GET(request) {
   const { searchParams } = new URL(request.url);
   const q = (searchParams.get("q") || "").trim();
   const limit = Math.min(Number(searchParams.get("limit")) || 20, 50);
+  const offset = Math.max(Number(searchParams.get("offset")) || 0, 0); // "Load more" paging
   if (q.length < 2) return Response.json([]);
   try {
     const { rows } = await pool.query(
-      'SELECT * FROM "TM".aceify_search_events($1, $2)',
-      [q, limit]
+      'SELECT * FROM "TM".aceify_search_events($1, $2, $3)',
+      [q, limit, offset]
     );
     return Response.json(rows);
   } catch (e) {

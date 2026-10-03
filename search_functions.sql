@@ -27,13 +27,16 @@ END $drop$;
 
 
 -- ---------------------------------------------------------------------
--- 1) search_events(query, limit, customer)
+-- 1) search_events(query, limit, customer, offset)
 --    Fuzzy, typo-tolerant search on event NAME, FUTURE events only, scoped to
 --    one customer. Default customer 'TC' -> the existing league client.
+--    p_offset supports "Load more" paging (skip the first N already shown).
 --    Usage:  SELECT * FROM "TM".search_events('raiders');
+--            SELECT * FROM "TM".search_events('raiders', 20, 'TC', 20); -- page 2
 -- ---------------------------------------------------------------------
 CREATE FUNCTION "TM".search_events(p_query text, p_limit int DEFAULT 20,
-                                   p_customer varchar DEFAULT 'TC')
+                                   p_customer varchar DEFAULT 'TC',
+                                   p_offset int DEFAULT 0)
 RETURNS TABLE (
     event_id    varchar,
     title       varchar,
@@ -54,18 +57,19 @@ AS $$
     WHERE e.customer = p_customer
       AND e.start_date >= (now() AT TIME ZONE 'UTC')          -- future only (dates are UTC)
       AND (e.title %> p_query OR e.title ILIKE '%' || p_query || '%')
-    ORDER BY word_similarity(p_query, e.title) DESC, e.start_date
-    LIMIT p_limit;
+    ORDER BY word_similarity(p_query, e.title) DESC, e.start_date, e.id
+    LIMIT p_limit OFFSET greatest(p_offset, 0);
 $$;
 
 -- aceify customer's search -> only tennis (customer='aceify')
-CREATE FUNCTION "TM".aceify_search_events(p_query text, p_limit int DEFAULT 20)
+CREATE FUNCTION "TM".aceify_search_events(p_query text, p_limit int DEFAULT 20,
+                                          p_offset int DEFAULT 0)
 RETURNS TABLE (
     event_id varchar, title varchar, start_date timestamp, url varchar,
     venue_name varchar, city varchar, state varchar, score real
 )
 LANGUAGE sql STABLE
-AS $$ SELECT * FROM "TM".search_events(p_query, p_limit, 'aceify'); $$;
+AS $$ SELECT * FROM "TM".search_events(p_query, p_limit, 'aceify', p_offset); $$;
 
 
 -- ---------------------------------------------------------------------

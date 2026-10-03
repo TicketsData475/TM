@@ -33,6 +33,9 @@ function money(n) {
   return "$" + Number(n).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
+/* how many search results to fetch per "Load more" page */
+const PAGE_SIZE = 20;
+
 /* recommended defaults (tennis / Australian Open) */
 const DEF_INVENTORY = "primary";
 const DEF_NUMS = { percentile: "0", rankWindow: "200", maxSections: "7", margin: "30" };
@@ -125,6 +128,8 @@ export default function AceifyHome() {
   const [suggestions, setSuggestions] = useState([]);
   const [showDrop, setShowDrop] = useState(false);
   const [results, setResults] = useState(null);
+  const [canLoadMore, setCanLoadMore] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
 
   const [selected, setSelected] = useState(null);
   const [sections, setSections] = useState([]);
@@ -170,14 +175,38 @@ export default function AceifyHome() {
     if (query.trim().length < 2) return;
     setShowDrop(false);
     setSelected(null);
-    const d = await fetch(`/api/aceify/search?q=${encodeURIComponent(query)}&limit=20`).then((r) => r.json());
-    setResults(Array.isArray(d) ? d : []);
+    const d = await fetch(
+      `/api/aceify/search?q=${encodeURIComponent(query)}&limit=${PAGE_SIZE}&offset=0`
+    ).then((r) => r.json());
+    const list = Array.isArray(d) ? d : [];
+    setResults(list);
+    setCanLoadMore(list.length === PAGE_SIZE); // a full page => there may be more
+  }
+
+  async function loadMore() {
+    if (!results || loadingMore) return;
+    setLoadingMore(true);
+    try {
+      const d = await fetch(
+        `/api/aceify/search?q=${encodeURIComponent(query)}&limit=${PAGE_SIZE}&offset=${results.length}`
+      ).then((r) => r.json());
+      const more = Array.isArray(d) ? d : [];
+      // de-dupe defensively in case the list shifted between pages
+      setResults((prev) => {
+        const seen = new Set(prev.map((e) => e.event_id));
+        return [...prev, ...more.filter((e) => !seen.has(e.event_id))];
+      });
+      setCanLoadMore(more.length === PAGE_SIZE);
+    } finally {
+      setLoadingMore(false);
+    }
   }
 
   async function pickEvent(e) {
     setSelected(e);
     setShowDrop(false);
     setResults(null);
+    setCanLoadMore(false);
     setSection(""); setRow(""); setRows([]); setSections([]);
     const s = await fetch(`/api/aceify/sections?eventId=${encodeURIComponent(e.event_id)}`).then((r) => r.json());
     setSections(Array.isArray(s) ? s : []);
@@ -217,6 +246,7 @@ export default function AceifyHome() {
 
   function reset() {
     setSelected(null); setResults(null); setSuggestions([]);
+    setCanLoadMore(false); setLoadingMore(false);
     setSection(""); setRow(""); setRows([]); setSections([]);
     setQuantity("1"); setQuote(null);
     resetControls(); setAdvOpen(false);
@@ -260,6 +290,18 @@ export default function AceifyHome() {
           {results.map((e) => (
             <EventRow key={e.event_id} e={e} onClick={() => pickEvent(e)} />
           ))}
+          {results.length > 0 && (
+            <div className="loadMoreWrap">
+              <span className="resultCount">
+                Showing {results.length} event{results.length === 1 ? "" : "s"}{canLoadMore ? "+" : ""}
+              </span>
+              {canLoadMore && (
+                <button className="loadMoreBtn" onClick={loadMore} disabled={loadingMore}>
+                  {loadingMore ? "Loading…" : "Load more"}
+                </button>
+              )}
+            </div>
+          )}
         </div>
       )}
 
